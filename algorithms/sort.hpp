@@ -68,6 +68,29 @@ namespace mcpp {
             }
         }
     }
+
+    // 希尔排序：每趟排序，对元素按照一个增量进行分组；每个分组分别进行插入排序。每趟的增量为上一次的一半，直至增量为1，排序完成。
+    // 稳定性：不稳定
+    template<typename RandomAccessIt>
+    void shell_sort(RandomAccessIt begin, RandomAccessIt end)
+    {
+        typename std::iterator_traits<RandomAccessIt>::difference_type inc = std::distance(begin, end) / 2;
+        // ...
+    }
+
+    // 归并排序
+    template<typename RandomAccessIt>
+    void mege_sort(RandomAccessIt begin, RandomAccessIt end) {
+        // ...
+    }
+
+    // 快速排序
+    template<typename RandomAccessIt>
+    void qsort(RandomAccessIt begin, RandomAccessIt end) {
+        // ...
+    }
+
+    // ...
 }
 
 #endif
