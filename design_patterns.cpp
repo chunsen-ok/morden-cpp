@@ -1,5 +1,9 @@
+// 设计模式原则
+// 
 #include <iostream>
 #include "design_patterns/chain_of_responsibility/chain_of_responsibility.hpp"
+
+using namespace mcpp;
 
 class InputHandler: public Handler {
 public:
