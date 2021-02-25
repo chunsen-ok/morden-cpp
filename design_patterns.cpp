@@ -7,7 +7,8 @@ public:
         : Handler()
         , m_hint(hint) {}
     
-    bool handle(c *Context) override {
+    bool handle(Context *c) override {
+        std::cout << "handle 1 ..." << std::endl;
         int val{0};
         std::cout << m_hint << ": ";
         std::cin >> val;
@@ -26,19 +27,33 @@ private:
 class VipHandler: public Handler {
 public:
     VipHandler(): Handler() {}
-    bool handle(c *Context) override {
-        std::cout << "Welcome!" << c->value() << std::endl;
+    bool handle(Context *c) override {
+        std::cout << "handle 2 ..." << std::endl;
+        std::cout << "Welcome! " << c->value() << std::endl;
+        return Handler::handle(c);
+    }
+};
+
+class FinalHandler : public Handler
+{
+public:
+    bool handle(Context *c) {
+        std::cout << "Handle it finally." << std::endl;
         return true;
     }
 };
 
 int main() {
-    InputHandler h1("Hello");
-    VipHandler h2;
+    InputHandler start("Hello");
+
+    VipHandler h1;
+    start.set_next(&h1);
+
+    FinalHandler h2;
     h1.set_next(&h2);
 
     Context c(12);
-    h1.handle(&c);
+    start.handle(&c);
 
     return 0;
 }

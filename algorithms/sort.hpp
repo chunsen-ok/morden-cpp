@@ -1,6 +1,8 @@
 #ifndef MCPP_SORT_HPP
 #define MCPP_SORT_HPP
 
+#include <iostream>
+
 namespace mcpp {
     template<typename ForwardIt>
     void swap(ForwardIt it1, ForwardIt it2)
@@ -72,19 +74,31 @@ namespace mcpp {
     // 希尔排序：每趟排序，对元素按照一个增量进行分组；每个分组分别进行插入排序。每趟的增量为上一次的一半，直至增量为1，排序完成。
     // 稳定性：不稳定
     template<typename RandomAccessIt>
-    void shell_sort(RandomAccessIt begin, RandomAccessIt end)
-    {
-        typename std::iterator_traits<RandomAccessIt>::difference_type inc = std::distance(begin, end) / 2;
-        // ...
+    void shell_sort(RandomAccessIt begin, RandomAccessIt end) {
+        for (auto inc = std::distance(begin, end) / 2; inc >= 1; inc /= 2) {
+            for (auto g = 0; g <= inc; ++g) {
+                for (auto i = begin + g; i < end; i += inc) {
+                    for (auto j = i + inc; begin < j && j < end;) {
+                        auto prev = j - inc;
+                        if (begin <= prev && *prev > *j) {
+                            mcpp::swap(prev, j);
+                            j = prev;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    // 归并排序
+    // 归并排序：拆分成子序列，对子序列进行排序，然后合并子序列。
     template<typename RandomAccessIt>
     void mege_sort(RandomAccessIt begin, RandomAccessIt end) {
         // ...
     }
 
-    // 快速排序
+    // 快速排序：选取一个分界值，将序列中比它小的放到左边，比它大的放到右边。
     template<typename RandomAccessIt>
     void qsort(RandomAccessIt begin, RandomAccessIt end) {
         // ...

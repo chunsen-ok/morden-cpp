@@ -4,6 +4,8 @@
 class Context {
 public:
     Context(int code): m_code(code) {}
+    virtual ~Context() {}
+    
     int value() const { return m_code; }
 
 private:

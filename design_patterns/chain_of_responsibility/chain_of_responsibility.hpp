@@ -1,14 +1,17 @@
 #ifndef CHAIN_OF_RESPONSIBILITY
 #define CHAIN_OF_RESPONSIBILITY
 
+#include <iostream>
 #include "context.hpp"
 
 class Handler {
 public:
-    void set_next(const h *Handler) { m_next = h; }
+    virtual ~Handler() { }
+
+    void set_next(Handler *h) { m_next = h; }
     Handler *next() const { return m_next; }
     
-    virtual bool handle(c *Context) {
+    virtual bool handle(Context *c) {
         if (m_next) { m_next->handle(c); }
         return false;
     }
