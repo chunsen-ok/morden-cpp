@@ -98,10 +98,39 @@ namespace mcpp {
         // ...
     }
 
-    // 快速排序：选取一个分界值，将序列中比它小的放到左边，比它大的放到右边。
-    template<typename RandomAccessIt>
+    // 快速排序：选取一个基准值，将序列中比它小的放到左边，比它大的放到右边。
+    // 快速排序是冒泡排序的一种改进。基准值可以是任意位置的元素。在比较的时候从序列的两侧开始，左侧索引指向元素比基准值大，则两者交换位置；右侧索引指向元素比基准值小，则交换位置。
+    // 直到两侧索引相遇，一趟排序完成。
+    // 注意：下标移动的条件
+    template <typename RandomAccessIt>
     void qsort(RandomAccessIt begin, RandomAccessIt end) {
-        // ...
+        auto base = begin;
+        for (auto left = begin + 1, right = end - 1; left <= right; ) {
+            if ((left < base && *left > *base) || (left > base && *left < *base)) {
+                mcpp::swap(left, base);
+                base = left;
+                ++left;
+            } else if (left < base && *left <= *base) {
+                ++left;
+            }
+
+            if ((right < base && *right > *base) || (right > base && *right < *base)) {
+                mcpp::swap(base, right);
+                base = right;
+                --right;
+            } else if (right > base && *right >= *base) {
+                --right;
+            }
+        }
+
+        if (begin < base) {
+            qsort(begin, base);
+        }
+
+        ++base;
+        if (base < end) {
+            qsort(base, end);
+        }
     }
 
     // ...
