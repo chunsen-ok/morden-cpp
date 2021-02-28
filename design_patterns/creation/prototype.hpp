@@ -2,7 +2,7 @@
 #define MCPP_PROTOTYPE_HPP
 
 namespace mcpp {
-    
+    // TODO ...
 }
 
 #endif
