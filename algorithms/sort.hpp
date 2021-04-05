@@ -133,7 +133,6 @@ namespace mcpp {
         }
     }
 
-    // ...
 }
 
 #endif
