@@ -1,17 +1,59 @@
 #include "bigint.hpp"
 
+void add_test(const std::string &comment) {
+    std::cout << "=== " << comment << " ===" << std::endl;
+    const auto n0 = BigInt::random<10, 20>();
+    std::cout << "n0: " << n0 << std::endl;
+
+    const auto n1 = BigInt::random<10, 20>();
+    std::cout << "n1: " << n1 << std::endl;
+    
+    std::cout << n0 + n1 << std::endl;
+}
+
+void sub_test(const std::string &comment) {
+    std::cout << "=== " << comment << " ===" << std::endl;
+    const auto n0 = BigInt::random<10, 20>();
+    std::cout << "n0: " << n0 << std::endl;
+
+    const auto n1 = BigInt::random<10, 20>();
+    std::cout << "n1: " << n1 << std::endl;
+    
+    std::cout << n0 - n1 << std::endl;
+    std::cout << n1 - n0 << std::endl;
+}
+
+void mul_test(const std::string &comment) {
+    std::cout << "=== " << comment << " ===" << std::endl;
+    const auto n0 = BigInt::random<10, 20>();
+    std::cout << "n0: " << n0 << std::endl;
+
+    const auto n1 = BigInt::random<10, 20>();
+    std::cout << "n1: " << n1 << std::endl;
+    
+    std::cout << n0 * n1 << std::endl;
+
+    const BigInt n2{"7289758278935728978927894", false};
+    std::cout << n0 * n2 << std::endl;
+}
+
+void div_test(const std::string &comment) {
+    std::cout << "=== " << comment << " ===" << std::endl;
+    const auto n0 = BigInt::random<20, 30>();
+    std::cout << "n0: " << n0 << std::endl;
+
+    const auto n1 = BigInt::random<10, 20>();
+    std::cout << "n1: " << n1 << std::endl;
+    
+    std::cout << n0 / n1 << std::endl;
+}
+
 int main() {
-    const auto n1 = BigInt::random<100, 1024>();
-    std::cout << n1 << std::endl;
 
-    const auto n2 = BigInt::random<100, 1024>();
-    std::cout << "Addition: " << n2 << std::endl;
-    std::cout << "Multiply: " << n1 * n2 << std::endl;
-
-    const auto n3 = BigInt("-21380729283570239042934");
-    const auto n4 = BigInt("-21380729283570239042934");
-    std::cout << n3 + n4 << std::endl;
-
+    add_test("Addition");
+    sub_test("Subtraction");
+    mul_test("Multiply");
+    div_test("Division");
     return 0;
 }
 
