@@ -57,6 +57,19 @@ public:
         return BigInt();
     }
 
+    /*
+    BigInt operator-(const BigInt &other) const {
+        if (is_positive() == other.is_positive()) {
+            bool positive = !this->operator<(other);
+            const BigInt &large = abs_less_than(other) ? other : *this;
+            const BigInt &small = abs_less_than(other) ? *this : other;
+            for (int i = 0; i < large.m_nums.size(); ++i) {
+                // ...
+            }
+        }
+    }
+    */
+
     BigInt operator*(const BigInt &other) const {
         BigInt total;
         for (int i = m_nums.size() - 1; i >= 0; --i) {
@@ -80,6 +93,51 @@ public:
             total = total + BigInt(tmp);
         }
         return total;
+    }
+
+    bool operator==(const BigInt &other) const {
+        if (is_positive() == other.is_positive() && m_nums.size() == other.m_nums.size() && m_nums == other.m_nums) {
+            return true;
+        }
+        return false;
+    }
+
+    bool operator<(const BigInt &other) const {
+        if (is_positive() == other.is_positive()) {
+            if (m_nums.size() == other.m_nums.size()) {
+                for (int i = 0; i < m_nums.size(); ++i) {
+                    const char lhs = m_nums[i];
+                    const char rhs = other.m_nums[i];
+                    if (lhs != rhs) { 
+                        return is_positive() ? lhs < rhs : lhs > rhs;
+                    }
+                }
+            }
+            return m_nums.size() < other.m_nums.size();
+        }
+        return !is_positive();
+    }
+
+    bool operator<=(const BigInt &other) const {
+        return this->operator<(other) || this->operator==(other);
+    }
+
+    bool operator>(const BigInt &other) const {
+        return !this->operator<=(other);
+    }
+
+    bool operator>=(const BigInt &other) const {
+        return !this->operator<(other);
+    }
+
+    bool operator!=(const BigInt &other) const {
+        return !this->operator==(other);
+    }
+
+    BigInt abs() const {
+        BigInt tmp = *this;
+        tmp.m_positive = true;
+        return tmp;
     }
 
     template<int MIN = 10, int MAX = 1024>
@@ -129,6 +187,19 @@ private:
         if (eraseCount > 0) {
             m_nums.erase(0, eraseCount);
         }
+    }
+    
+    bool abs_less_than(const BigInt &other) const {
+        if (m_nums.size() == other.m_nums.size()) {
+            for (int i = 0; i < m_nums.size(); ++i) {
+                const char lhs = m_nums[i];
+                const char rhs = other.m_nums[i];
+                if (lhs != rhs) { 
+                    return is_positive() ? lhs < rhs : lhs > rhs;
+                }
+            }
+        }
+        return m_nums.size() < other.m_nums.size();
     }
 
 private:
