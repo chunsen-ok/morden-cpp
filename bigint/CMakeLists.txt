@@ -7,7 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
-add_executable(bigint main.cpp)
+add_executable(bigint
+    main.cpp
+    bigint.hpp
+)
 
 install(
     TARGETS bigint
