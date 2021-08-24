@@ -1,7 +1,7 @@
 #! /bin/bash
 
 CMAKE_APP="D:/Applications/Qt/Tools/CMake_64/bin/cmake.exe"
-CMAKE_GENERATOR="NMake Makefiles"
+CMAKE_GENERATOR="MinGW Makefiles"
 
 function build {
     $CMAKE_APP -S "$1" -B "build/$1" -G "$CMAKE_GENERATOR"

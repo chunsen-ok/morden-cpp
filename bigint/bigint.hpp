@@ -105,9 +105,25 @@ std::pair<bool, std::string> abs_div(const std::string &lhs, const std::string &
     } else if (lhs == rhs) {
         return std::make_pair(true, "1");
     } else {
-        const std::string_view lsv(lhs.data(), lhs.size() - (rhs.size() - 1));
-        const std::string_view rsv(rhs.data(), 1);
-        // ...
+        const std::string_view dividend(lhs.data(), lhs.size() - (rhs.size() - 1));
+        const char divisor = rhs[0] - '0';
+
+        std::string s;
+        char n{0};
+        for (const char v: dividend) {
+            n = n * 10 + (v - '0');
+            const char t = n / divisor;
+            if (t != 0) {
+                s.push_back(t + '0');
+                n = n % divisor;
+            } else {
+                n = v - '0';
+                if (s.size() != 0) {
+                    s.push_back('0');
+                }
+            }
+        }
+        return std::make_pair(true, s);
     }
     return std::make_pair(true, "");
 }
@@ -168,7 +184,14 @@ public:
 
     BigInt operator/(const BigInt &other) const {
         const auto s = abs_div(m_nums, other.m_nums);
-        return BigInt(s.second, s.first);
+        return BigInt(s.second, is_positive() == other.is_positive());
+    }
+
+    BigInt operator%(const BigInt &other) const {
+        const auto op = abs_div(m_nums, other.m_nums);
+        const auto m = abs_mul(op.second, other.m_nums);
+        const auto remain = abs_sub(m_nums, m.second);
+        return BigInt(remain.second, remain.first);
     }
 
     bool operator==(const BigInt &other) const {
@@ -218,11 +241,12 @@ public:
 
     template<int MIN = 10, int MAX = 1024>
     static BigInt random() {
-        std::random_device r;
-        std::default_random_engine e(r());
+        int *seed = new int;
+        std::mt19937_64 e(*seed);
         std::uniform_int_distribution<int> dist(MIN, MAX);
         std::uniform_int_distribution<int> rnum(0, 9);
         const int len = dist(e);
+        delete seed;
 
         std::string s;
         for (int i = 0; i < len; ++i) {

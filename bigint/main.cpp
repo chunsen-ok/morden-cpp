@@ -48,12 +48,28 @@ void div_test(const std::string &comment) {
     std::cout << n0 / n1 << std::endl;
 }
 
+void mod_test(const std::string &comment) {
+    std::cout << "=== " << comment << " ===" << std::endl;
+    const auto n0 = BigInt::random<6, 10>();
+    std::cout << "n0: " << n0 << std::endl;
+
+    const auto n1 = BigInt::random<3, 6>();
+    std::cout << "n1: " << n1 << std::endl;
+
+    const auto nm = n0 / n1;
+
+    std::cout << nm << std::endl;
+    std::cout << n0 - nm * n1 << "," << nm * n1 << std::endl;
+    std::cout << n0 % n1 << std::endl;
+}
+
 int main() {
 
     add_test("Addition");
     sub_test("Subtraction");
     mul_test("Multiply");
     div_test("Division");
+    mod_test("Modulo");
     return 0;
 }
 
