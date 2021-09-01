@@ -8,17 +8,17 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 add_library(mui
-    # point.hpp
-    # size.hpp
+    point.hpp
+    size.hpp
     # size.cpp
-    # size_policy.hpp
+    size_policy.hpp
     # size_policy.cpp
     property.hpp
     property.cpp
     object.hpp
     object.cpp
-    # widget.hpp
-    # widget.cpp
+    widget.hpp
+    widget.cpp
     # application.hpp
 )
 

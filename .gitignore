@@ -35,4 +35,4 @@ robot.sh
 
 .vscode/
 build/
-bin/
+dist/

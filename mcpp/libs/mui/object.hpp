@@ -3,8 +3,7 @@
 
 #include <string>
 #include <memory>
-
-class Event;
+#include "property.hpp"
 
 class ObjectPrivate;
 class Object
@@ -13,7 +12,13 @@ public:
     explicit Object(Object *parent = nullptr);
     ~Object();
 
+    bool has_child(const Object *child) const;
+    void add_child(Object *child);
+
+    Property<std::string> objectName;
+
 protected:
+    explicit Object(ObjectPrivate *d, Object *parent = nullptr);
     std::unique_ptr<ObjectPrivate> d;
 };
 

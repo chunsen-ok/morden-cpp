@@ -1,6 +1,6 @@
 #include "widget.hpp"
 
-Widget::Widget(Widget *parent = nullptr)
+Widget::Widget(Widget *parent)
     : Object(parent)
 {
 
@@ -8,16 +8,20 @@ Widget::Widget(Widget *parent = nullptr)
 
 void Widget::draw()
 {
-
+    // ...
 }
 
+void Widget::show()
+{
+    // ...
+}
 
 Size<double> Widget::sizeHint() const
 {
-
+    return *size;
 }
 
 SizePolicy Widget::sizePolicy() const
 {
-
+    return SizePolicy{SizePolicy::Stretch, SizePolicy::Stretch};
 }
