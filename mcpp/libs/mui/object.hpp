@@ -2,19 +2,19 @@
 #define OBJECT_HPP
 
 #include <string>
-#include "property.hpp"
+#include <memory>
 
 class Event;
 
+class ObjectPrivate;
 class Object
 {
 public:
     explicit Object(Object *parent = nullptr);
-
-    Property<std::string> objectName;
+    ~Object();
 
 protected:
-    void event(Event *ev);
+    std::unique_ptr<ObjectPrivate> d;
 };
 
 #endif

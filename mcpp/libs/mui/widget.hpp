@@ -18,8 +18,8 @@ public:
     virtual Size<double> sizeHint() const;
     virtual SizePolicy sizePolicy() const;
 
-    Property<Point<double>> position;
-    Property<Size<double>> size;
+    // Property<Point<double>> position;
+    // Property<Size<double>> size;
 };
 
 /*

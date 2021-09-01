@@ -8,15 +8,17 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 add_subdirectory(libs/bigint)
-# add_subdirectory(libs/mui)
+add_subdirectory(libs/mui)
 add_subdirectory(libs/reactive)
+add_subdirectory(libs/events)
 
 add_executable(mcpp src/main.cpp)
 target_link_libraries(mcpp
     PRIVATE
         bigint
-        # mui
+        events
         reactive
+        mui
 )
 
 install(

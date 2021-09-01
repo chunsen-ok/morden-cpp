@@ -8,13 +8,17 @@ template<typename T>
 class Property
 {
 public:
-    explicit Property(const T &other);
+    explicit Property(const T &value): m_value(value) {}
 
-    T get() const;
-    void set(T);
+    T get() const { return m_value; }
+    void set(const T &value) {
+        if (m_value != value) {
+            m_value = value;
+        }
+    }
 
-    void on_changed(std::function<void(T)>);
-    void bind();
+private:
+    T m_value;
 };
 
 #endif

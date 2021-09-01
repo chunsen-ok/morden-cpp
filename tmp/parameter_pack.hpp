@@ -24,12 +24,3 @@ template<typename T, template<typename> typename X>
 class B {
     X<T> inner;
 };
-
-int main() {
-    B<int, A> x;
-
-    const std::string name{"LiuChunsen"};
-    print("name: ", name, ", age: ", 21);
-    
-    return 0;
-}

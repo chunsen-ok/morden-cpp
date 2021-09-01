@@ -14,7 +14,9 @@ add_library(mui
     # size_policy.hpp
     # size_policy.cpp
     property.hpp
-    # object.hpp
+    property.cpp
+    object.hpp
+    object.cpp
     # widget.hpp
     # widget.cpp
     # application.hpp
