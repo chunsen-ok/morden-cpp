@@ -5,6 +5,8 @@ CMAKE_APP="$CMAKE_ROOT_DIR/cmake.exe"
 CTEST_APP="$CMAKE_ROOT_DIR/ctest.exe"
 CMAKE_GENERATOR="MinGW Makefiles"
 
+# ========================
+
 function exit_on_failed {
     if [ $? -ne 0 ]; then
         exit 1
