@@ -1,33 +1,78 @@
 #include <iostream>
-#include <event_pool.hpp>
 
-#include <widget.hpp>
+int main() {
 
-class EventLoop
-{
-public:
-    int exec();
-};
-
-int EventLoop::exec()
-{
-    return 0;
 }
 
-int main(int argc, char *argv[])
+void startUp()
 {
-    EventLoop loop;
+    Application::init();
 
-    Widget widget;
-    
-    // widget.size
-    // .changed([](const Size<double> &size){
-    // });
+    Application::onNeedUpgrade()
+    .then([](){
+        Window::showUpgrade();
+    });
 
-    widget.position = Point<double>{100, 100};
-    widget.size = Size<double>{800, 600};
+    Window::onAllowUpgrade()
+    .then([](){
+        Application::upgrade();
+    });
 
-    widget.show();
+    Application::onExit()
+    .then([](){
+        Window::quit();
+        Session::stop(); // logout, stop received messages, persist data
+        Application::stop();
+    });
 
-    return loop.exec();
+    Network::onError()
+    .then([](){
+        return Window::showError();
+    })
+    .then([](bool retry){
+        if (retry) {
+            Application::start();
+        } else{
+            Application::exit();
+        }
+    });
+
+    Session::onLoginOk()
+    .then([](){
+        Session::start(); // setup LocalStorage, ...`
+        // ... save some data
+        Session::fetchInChats();
+        Session::fetchContacts();
+        Session::fetchGroups();
+        Session::fetchOfflineMessages();
+        Session::fetchOtherDatas();
+        Session::startFetchMessages();
+    })
+    .then([](){
+        Window::showMainWindow();
+    });
+
+    Application::check();
+    GlobalStorage::init();
+    Network::init();
+
+    const auto info = GlobalStorage::data("last_login");
+    if (info) {
+        Window::AutoLogin().show(); // login, to qr, exit
+        Window::AutoLogin()
+        .onComfirm()
+        .then([](){
+            Api::login();
+        });
+    } else {
+        // need network
+        Window::showQR(); // refresh, allow, exit
+
+        Window::QR()
+        .onAllowed([](){
+            Api::login();
+        });
+    }
+
+    return Application::exec();
 }

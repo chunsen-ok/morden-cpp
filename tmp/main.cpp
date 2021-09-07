@@ -8,51 +8,37 @@
 // std::move 返回一个右值引用
 
 #include <iostream>
+#include <tuple>
 #include <type_traits>
 
-template<typename T>
-class Number
+template<typename Callable, typename ... Args>
+class Event
 {
 public:
-    Number(const T &value): m_value(value) {}
-    Number(const Number &other): m_value(other.m_value)
+    Event(Callable &&cb, Args ... args)
+        : m_callback(cb)
+        , m_args(std::make_tuple(args...))
     {
-        std::cout << "Copy Number" << std::endl;
-    }
-    Number &operator=(const Number &other)
-    {
-        m_value = other.m_value;
-    }
-    ~Number() {
-        std::cout << "~Number" << std::endl;
+
     }
 
-    Number &operator++() {
-        ++m_value;
-        return *this;
+    template<typename R = typename std::invoke_result<Callable, Args ...>::type>
+    R exec() {
+        return std::apply(m_callback, m_args);
     }
 
-    template<typename U>
-    friend std::ostream &operator<<(std::ostream &os, const Number<U> &rhs);
 private:
-    T m_value;
+    Callable m_callback;
+    std::tuple<Args...> m_args;
 };
 
-template<typename U>
-std::ostream &operator<<(std::ostream &os, const Number<U> &rhs)
+int main()
 {
-    os << rhs.m_value;
-    return os;
-}
+    Event ev([](int n1, int n2, const std::string &info){
+        return n1 + n2;
+    }, 12, 432, "hello");
 
-template<typename T>
-void increment(Number<T> &&value)
-{
-    ++value;
-    std::cout << value << std::endl;
-}
+    std::cout << ev.exec() << std::endl;
 
-int main() {
-    auto n0 = Number<int>(123);
-    increment(std::move(n0));
+    return 0;
 }
