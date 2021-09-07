@@ -3,12 +3,16 @@
 
 #include <vector>
 
+namespace mcpp {
+
 class Event;
+
+}
 
 class EventPoolPrivate
 {
 public:
-    std::vector<Event*> m_events;
+    std::vector<mcpp::Event*> m_events;
 };
 
 #endif

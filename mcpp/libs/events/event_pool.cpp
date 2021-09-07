@@ -19,7 +19,7 @@ EventPool::~EventPool()
     std::cout << "~EventPool" << std::endl;
 }
 
-void EventPool::push_event(Event *ev)
+void EventPool::push_event(mcpp::Event *ev)
 {
     if (!ev) { return; }
     d->m_events.push_back(ev);

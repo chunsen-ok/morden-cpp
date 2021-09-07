@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(events)
+project(mevents)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
-add_library(events
+add_library(mevents
     event.hpp
     event_pool.hpp
     event_pool.cpp
@@ -15,6 +15,6 @@ add_library(events
     private/event_pool_p.cpp
 )
 
-target_include_directories(events
+target_include_directories(mevents
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 )

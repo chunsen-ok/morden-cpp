@@ -3,7 +3,11 @@
 
 #include <memory>
 
+namespace mcpp {
+    
 class Event;
+
+}
 
 class EventPoolPrivate;
 class EventPool
@@ -13,7 +17,7 @@ public:
     EventPool();
     ~EventPool();
 
-    void push_event(Event *ev);
+    void push_event(mcpp::Event *ev);
 
 private:
     std::unique_ptr<EventPoolPrivate> d;
