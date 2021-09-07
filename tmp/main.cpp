@@ -32,13 +32,33 @@ private:
     std::tuple<Args...> m_args;
 };
 
+template<typename Callable, typename ReturnType>
+void call_it(Callable &&cb)
+{
+    std::cout << cb() << std::endl;
+}
+
+template<typename Callbale>
+void call_it(Callbale &&cb)
+{
+    cb();
+}
+
 int main()
 {
     Event ev([](int n1, int n2, const std::string &info){
         return n1 + n2;
     }, 12, 432, "hello");
-
     std::cout << ev.exec() << std::endl;
+
+
+    call_it([](){
+        std::cout << "hello" << std::endl;
+    });
+    
+    call_it([](){
+        return 2;
+    });
 
     return 0;
 }
