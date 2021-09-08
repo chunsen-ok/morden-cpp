@@ -32,17 +32,37 @@ private:
     std::tuple<Args...> m_args;
 };
 
-template<typename Callable, typename ReturnType>
+
+template<typename Callable, typename = std::void_t<typename std::invoke_result<Callable>::type>>
+struct CallIt
+{
+    static void exec(Callable &&cb) {
+        std::cout << "Return" << std::endl;
+        cb();
+    }
+};
+
+template<typename Callable>
+struct CallIt<Callable, void>
+{
+    static void exec(Callable &&cb) {
+        std::cout << "No return" << std::endl;
+        cb();
+    }
+};
+
+
+template<typename Callable, typename ReturnType = typename std::invoke_result<Callable>::type>
 void call_it(Callable &&cb)
 {
-    std::cout << cb() << std::endl;
+    CallIt<Callable, ReturnType>::exec(std::move(cb));
 }
 
-template<typename Callbale>
-void call_it(Callbale &&cb)
-{
-    cb();
+int fun1() {
+    return 0;
 }
+
+void fun2() {}
 
 int main()
 {
@@ -51,13 +71,14 @@ int main()
     }, 12, 432, "hello");
     std::cout << ev.exec() << std::endl;
 
-
-    call_it([](){
-        std::cout << "hello" << std::endl;
+    call_it([]() {
+        std::cout << "10" << std::endl;
     });
     
-    call_it([](){
-        return 2;
+    call_it([]() {
+        constexpr int num = 2;
+        std::cout << num << std::endl;
+        return num;
     });
 
     return 0;
