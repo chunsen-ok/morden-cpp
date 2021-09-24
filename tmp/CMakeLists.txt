@@ -9,6 +9,7 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/../dist")
 
 add_executable(tmp
     main.cpp
+    field.hpp
 )
 
 install(
