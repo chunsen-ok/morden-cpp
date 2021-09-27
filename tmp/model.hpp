@@ -1,6 +1,8 @@
 #ifndef FIELD_HPP
 #define FIELD_HPP
 
+#include <string>
+
 /// Usage: Field<int, 1> uid{"uid"};
 /// std::cout << uid.name() << ", " << uid.value() << ", " << uid.role() << std::endl;
 /// <<- "uid, 0, 1"
@@ -32,6 +34,25 @@ private:
     const char *m_name;
     Type m_value;
 };
+
+class Item
+{
+public:
+    int idt;
+    long long uid;
+    std::string name;
+    std::string avatar;
+};
+
+class Model
+{
+public:
+
+private:
+};
+
+
+#include <iostream>
 
 namespace test {
 
