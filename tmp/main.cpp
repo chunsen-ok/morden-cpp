@@ -7,10 +7,8 @@
 //
 // std::move 返回一个右值引用
 
-#include "model.hpp"
 
 int main()
 {
-    test::test_field();
     return 0;
 }

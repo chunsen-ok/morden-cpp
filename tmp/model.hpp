@@ -47,9 +47,9 @@ public:
 class Model
 {
 public:
-
 private:
 };
+
 
 
 #include <iostream>
