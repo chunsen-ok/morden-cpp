@@ -51,7 +51,6 @@ public:
 private:
 };
 
-
 #include <iostream>
 
 namespace test {
