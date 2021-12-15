@@ -33,38 +33,34 @@
 #include <variant>
 #include <functional>
 
-struct Model
+// constexpr 
+// decltype 推断类型
+// declval 
+
+// 条件 - 模板参数特例化
+// 循环 - 递归
+
+template<typename T>
+struct ElementType
 {
-    int value {0};
+    using type = typename std::iterator_traits<decltype(std::begin(std::declval<T>()))>::value_type;
 };
 
-struct IncAction {};
-struct DecAction {};
-struct ResetAction {
-    int new_value {0};
+template<int N>
+struct Sum {
+    static const int value = Sum<N-1>::value + N;
 };
-using Action = std::variant<IncAction, DecAction, ResetAction>;
 
-// Reducer - update
-Model update(Model model, Action action);
-
-// commands
-std::optional<Action> intent(char event)
-{
-    switch (event) {
-        case '+': return IncAction{};
-        case '-': return DecAction{};
-        case '.': return ResetAction{};
-        default: return std::nullopt;
-    }
-}
-
-// draw
-void draw(Model model)
-{
-    std::cout << model.value << std::endl;
-}
+template<>
+struct Sum<0> {
+    static const int value = 0;
+};
 
 int main() {
+    static_assert(std::is_same<int, ElementType<std::vector<int>>::type>::value, "Element type is not int");
+
+    constexpr int val = Sum<3>::value;
+    std::cout << val << std::endl;
+
     return 0;
 }
