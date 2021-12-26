@@ -32,6 +32,7 @@
 #include <optional>
 #include <variant>
 #include <functional>
+#include <algos/sort.hpp>
 
 // constexpr 
 // decltype 推断类型
@@ -52,5 +53,13 @@ int main() {
     auto note = Note{};
     const auto &info = typeid(note);
     std::cout << "class: " << info.name() << std::endl;
+
+    std::vector<int> ints{352,62356,236,235,2354,2362,34,46};
+    mcpp::qsort(ints.begin(), ints.end());
+    for (auto num: ints) {
+        std::cout << num << " ";
+    }
+    std::cout << std::endl;
+
     return 0;
 }

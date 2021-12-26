@@ -15,3 +15,8 @@ install(FILES
     sort.hpp
     DESTINATION "include/algos"
 )
+
+install(FILES
+    algos-config.cmake
+    DESTINATION "cmake"
+)
