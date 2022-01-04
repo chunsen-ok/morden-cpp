@@ -32,6 +32,7 @@
 #include <optional>
 #include <variant>
 #include <functional>
+#include <algos/sort.hpp>
 
 // constexpr 
 // decltype 推断类型
@@ -40,27 +41,25 @@
 // 条件 - 模板参数特例化
 // 循环 - 递归
 
-template<typename T>
-struct ElementType
+#include <typeinfo>
+
+class Note
 {
-    using type = typename std::iterator_traits<decltype(std::begin(std::declval<T>()))>::value_type;
-};
+public:
 
-template<int N>
-struct Sum {
-    static const int value = Sum<N-1>::value + N;
-};
-
-template<>
-struct Sum<0> {
-    static const int value = 0;
 };
 
 int main() {
-    static_assert(std::is_same<int, ElementType<std::vector<int>>::type>::value, "Element type is not int");
+    auto note = Note{};
+    const auto &info = typeid(note);
+    std::cout << "class: " << info.name() << std::endl;
 
-    constexpr int val = Sum<3>::value;
-    std::cout << val << std::endl;
+    std::vector<int> ints{352,62356,236,235,2354,2362,34,46};
+    mcpp::qsort(ints.begin(), ints.end());
+    for (auto num: ints) {
+        std::cout << num << " ";
+    }
+    std::cout << std::endl;
 
     return 0;
 }

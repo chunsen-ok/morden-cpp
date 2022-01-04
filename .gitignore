@@ -32,7 +32,6 @@
 *.app
 
 robot.sh
-
 .vscode/
-build/
+build*/
 dist/
