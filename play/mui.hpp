@@ -9,128 +9,74 @@
 2. 界面和模型数据关联有些麻烦，甚至可能存在运行效率问题
 3. 基础设施的数据、资源变化必须通过model来关联
 3. DataRole 膨胀
+
+参考rust druid
 */
 
 namespace play {
 
-namespace infras {
+struct Size {
+    double width;
+    double height;
+};
 
-class NetworkManager
-{
-public:
+struct EventCtx {
 
 };
 
-}
+struct UpdateCtx {
 
-namespace model {
-
-class Account;
-class UserPool;
-class MessageList;
-class ChatList
-{
-public:
-    // 依赖注入
-    ChatList(UserPool users);
 };
 
-class FriendList
-{
-public:
-    FriendList();
+struct LayoutCtx {
+
 };
 
-class GroupList;
+struct BoxConstraints {
 
-class AppModel
-{
-public:
-    Account account();
-    UserPool users();
-
-    ChatList chats();
-    FriendList friends();
-    GroupList groups();
 };
 
-}
+struct PaintCtx {
 
-namespace ui {
-
-class TitleBar;
-class MainMenu;
-class ChatList;
-class MessageList;
-class FriendList;
-class GroupList;
-
-class ChatList
-{
-public:
-    ChatList(model::ChatList chats)
-    {
-        binding(chats, &model::ChatList::data_changed, this, [](int index, const std::vector<int> &roles){
-            controller.update(index, roles);
-        });
-
-        binding(chats, &model::ChatList::row_inserted, this, [](int start, int end){
-            // ...
-            update(start, end);
-        });
-    }
-
-protected:
-    ListController controller;
 };
 
-class ListController
-{
-public:
-    ListController(model::ChatList model, ChatList view)
-    {
+struct Env {
 
-    }
-
-    // 简单逻辑没有必要使用controller
-    // 复杂逻辑、或者数据的转换由controller负责
-    void update(int index, const std::vector<int> &roles) {
-
-        // 涉及数据的转换
-        if (roles.contains(role::Avatar)) {
-            util::clearAvatarCache();
-        }
-
-        view.update(index);
-    }
 };
 
-
-class MainWindow
-{
+template<typename T>
+class Widget {
 public:
-    MainWindow(model::AppModel model)
-    {
-        // model-view bindings
-        chats.set_model(model.chats);
-    }
-
-private:
-    TitleBar title;
-    MainMenu menu;
-    ChatList chats;
-    MessageList messages;
+    virtual void event(EventCtx &ctx, const Event &ev, T &data, const Env &env) = 0;
+    virtual void update(UpdateCtx &ctx, const T &old_data, const T &data, const Env &env) = 0;
+    virtual Size layout(LayoutCtx &ctx, const BoxConstraints &bc, const T &data, const Env &env) = 0;
+    virtual void paint(PaintCtx &ctx, const T &data, const Env &env) = 0;
 };
 
-}
+template<typename T>
+class Label: public Widget<T> {
+public:
+    void event(EventCtx &ctx, const Event &ev, T &data, const Env &env) override;
+    void update(UpdateCtx &ctx, const T &old_data, const T &data, const Env &env) override;
+    Size layout(LayoutCtx &ctx, const BoxConstraints &bc, const T &data, const Env &env) override;
+    void paint(PaintCtx &ctx, const T &data, const Env &env) override;
+};
 
-namespace test {
+class AppData {
+public:
+    void load();
+};
 
-void start() {
+class AppView {
 
-}
+};
 
-}
+class App {
+};
+
+class SandBox {
+
+};
 
 }
 
