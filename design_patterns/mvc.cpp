@@ -4,40 +4,20 @@
 // Controller - 处理用户输入和交互，负责选择模型和视图；控制应用如何响应请求
 #include <iostream>
 
-namespace model {
-
-class Account;
-class ChatList;
-class Chatting;
-class UserPool;
-class FriendList;
-class GroupList;
-class MessageList;
-class ChattingGroupMemberList;
-class SearchResultList;
-
-class Model
+class Note
 {
 public:
-    Account account();
-    ChatList chats();
-    Chatting chatting();
-    UserPool users();
-    FriendList friends();
-    GroupList groups();
-    MessageList messages();
-    ChattingGroupMemberList chattingGroupMembers();
-    SearchResultList searchResults();
 };
 
-}
-
-namespace view {
-
-class ChatList
+class NoteModel
 {
 public:
-    ChatList();
+    NoteModel();
+
+    int createNote();
+    void removeNote(int uid);
+    Note note(int uid) const;
+    void update(const Note &note);
 };
 
 class View
@@ -46,14 +26,29 @@ public:
 
 };
 
-}
-
-class Controller {
+// controller，处理view和model之间数据的转换
+class Controller
+{
 public:
-    void update(Model model, int role);
+    Controller(NoteModel *model, View *view);
+    
+    void newNote()
+    {
+        const auto uid = mModel->createNote();
+        mView.setCurrentUid(uid);
+    }
+
+private:
+    NoteModel *mModel;
+    View *mView;
 };
 
 int main() {
-    // todo ...
+    NoteModel model;
+    View view;
+
+    Controller controller(&model, &view);
+    controller.newNote();
+
     return 0;
 }

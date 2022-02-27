@@ -1,0 +1,9 @@
+{
+    "package": "ArgParser",
+    "version": "0.0.1",
+    "author": "chuns.liu@foxmail.com",
+    "description": "The description about 'ArgParser' package.",
+    "lang": {
+        "std": 17
+    }
+}
