@@ -1,18 +1,5 @@
 #include <iostream>
-
-class Arg;
-class ArgParser
-{
-public:
-    void parse(int argc, char *argv[]);
-    void add_arg(const Arg &arg);
-};
-
-class Arg
-{
-public:
-    Arg(const std::string &name, const std::string &description = std::string{}, const std::string &value = std::string{});
-};
+#include "arg_parser.hpp"
 
 int main(int argc, char *argv[])
 {
