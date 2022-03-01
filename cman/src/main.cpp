@@ -17,6 +17,7 @@
 
 #include <string>
 #include <iostream>
+#include "arg_parser.hpp"
 
 void printOption(const std::string &name, const std::string &desc) {
     std::cout << "    " << name << "\t\t" << desc << std::endl;

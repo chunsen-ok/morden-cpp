@@ -1,0 +1,14 @@
+{
+    "package": {
+        "name": "cman",
+        "version": "0.0.1",
+        "author": "chuns.liu@foxmail.com",
+        "description": "The description about 'cman' package."
+    },
+    "c": {
+        "version": "c11"
+    },
+    "cpp": {
+        "version": "c++17"
+    }
+}
