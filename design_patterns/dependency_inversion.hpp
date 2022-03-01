@@ -1,0 +1,6 @@
+#ifndef MCPP_DEPENDENCY_INVERSION_HPP
+#define MCPP_DEPENDENCY_INVERSION_HPP
+
+// 依赖倒置
+
+#endif
