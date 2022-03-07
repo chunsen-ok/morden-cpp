@@ -3,6 +3,16 @@
 
 using namespace mui;
 
+class A {
+public:
+    Signal<int> valueChanged;
+};
+
+class B {
+public:
+    Slot<int> onValueChanged;
+};
+
 int main(int argc, char *argv[])
 {
     Signal<int> num;

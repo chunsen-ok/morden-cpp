@@ -14,6 +14,13 @@ class Signal
 {
     friend class Connection<T>;
 public:
+    ~Signal() {
+        std::cout << "~Signal: " << this << std::endl;
+        for (auto conn: mConnections) {
+            conn->disconnect();
+            delete conn;
+        }
+    }
     void call(const T &v) {
         for (const auto conn: mConnections) {
             conn->call(v);
@@ -29,6 +36,13 @@ class Slot
 {
     friend class Connection<T>;
 public:
+    ~Slot() {
+        std::cout << "~Slot: " << this << std::endl;
+        for (auto conn: mConnections) {
+            conn->disconnect();
+            delete conn;
+        }
+    }
     void call(const T &v) {
         std::cout << "in slot: " << v << std::endl;
     }
@@ -43,8 +57,25 @@ public:
     Signal<T> *mSignal {nullptr};
     Slot<T> *mSlot {nullptr};
 
+    ~Connection() {
+        std::cout << "~Connection: " << this << std::endl;
+    }
+
     void call(const T &v) {
         mSlot->call(v);
+    }
+
+    void disconnect() {
+        std::remove_if(mSignal->mConnections.begin(), mSignal->mConnections.end(), [this](auto conn){
+            return conn == this;
+        });
+        
+        std::remove_if(mSlot->mConnections.begin(), mSlot->mConnections.end(), [this](auto conn){
+            return conn == this;
+        });
+
+        mSignal = nullptr;
+        mSlot = nullptr;
     }
 
     static Connection *create(Signal<T> *signal, Slot<T> *slot) {
