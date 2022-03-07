@@ -1,0 +1,16 @@
+{
+    "package": {
+        "name": "clean",
+        "version": "0.0.1",
+        "authors": ["chuns.liu@foxmail.com"],
+        "description": "The description about 'clean' package."
+    },
+    "lang": {
+        "c": {
+            "version": "c11"
+        },
+        "cpp": {
+            "version": "c++17"
+        }
+    }
+}

@@ -17,10 +17,11 @@
 
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include "arg_parser.hpp"
 
 void printOption(const std::string &name, const std::string &desc) {
-    std::cout << "    " << name << "\t\t" << desc << std::endl;
+    std::cout << "    " << std::setw(20) << std::left << name << desc << std::endl;
 }
 
 void printHelp() {
