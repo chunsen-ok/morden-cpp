@@ -23,70 +23,38 @@
 #include <iomanip>
 #include "arg_parser.hpp"
 
-void printOption(const std::string &name, const std::string &desc) {
-    std::cout << "    " << std::setw(20) << std::left << name << desc << std::endl;
-}
-
-void printHelp() {
-    std::cout << "The C/C++ package manager.\n" << std::endl;
-    
-    std::cout << "Usage:" << std::endl;
-    std::cout << "    " << "cman [OPTIONS] [COMMAND]\n" << std::endl;
-    
-    std::cout << "Options:" << std::endl;
-    printOption("-h, --help", "Prints help information");
-    printOption("-v, --version", "Print version info");
-    std::cout << std::endl;
-    
-    std::cout << "Commands:" << std::endl;
-    printOption("new", "Create a new package");
-    printOption("build", "Compile current package");
-    printOption("run", "Run current package binary");
-    printOption("install", "Install current package to specific directory");
-    std::cout << std::endl;
-
-    std::cout << "Other informations." << std::endl;
-}
-
-void printVersion() {
-    std::cout << "cman 0.0.1 (2022-03-07)" << std::endl;
-}
-
 int main(int argc, char *argv[])
 {
-    if (argc == 1) {
-        printHelp();
-        return -1;
-    }
+    App app{"cman", "The C/C++ package manager."};
+    app.add_arg(Arg{"help", "Prints help information"})
+    .add_arg(Arg("version", "Print version info"))
+    .add_command(
+        Command{"new", "Create new package"}
+        .add_arg(Arg{"help", "Prints help information"})
+        .add_arg(Arg{"version", "Print version info"})
+        .add_arg(Arg{"name", "The package name, default is package directory name", "NAME"})
+    )
+    .add_command(
+        Command{"build", "Build current package"}
+        .add_arg(Arg{"help", "Prints help information"})
+        .add_arg(Arg{"version", "Print version info"})
+    )
+    .add_command(
+        Command{"run", "Run current package binary"}
+        .add_arg(Arg{"help", "Prints help information"})
+        .add_arg(Arg{"version", "Print version info"})
+    )
+    .add_command(
+        Command{"install", "Install current package"}
+        .add_arg(Arg{"help", "Prints help information"})
+        .add_arg(Arg{"version", "Print version info"})
+        .add_arg(Arg{"path", "Install target directory"})
+    );
 
-    const char *arg = argv[1];
-    if (arg[0] == '-') {
-        // option or standard input or output
-        const auto len = std::strlen(arg);
-        if (len == 1) {
-            // standard input or output
-        } else if (len == 2) {
-            if (arg[1] == 'h') {
-                printHelp();
-                return 0;
-            } else if (arg[1] == 'v') {
-                printVersion();
-                return 0;
-            }
-        } else {
-            // ...
-        }
-    } else {
-        // command
-        if (std::strcmp(arg, "new")) {
+    app.parse(argc, argv);
 
-        } else if (std::strcmp(arg, "build")) {
-
-        } else if (std::strcmp(arg, "run")) {
-
-        } else if (std::strcmp(arg, "install")) {
-
-        }
+    if (app.is_set("help")) {
+        app.showHelp();
     }
 
     return 0;
