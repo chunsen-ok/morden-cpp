@@ -1,5 +1,6 @@
 {
     "package": {
+        "type": "bin",
         "name": "mui",
         "version": "0.0.1",
         "authors": ["chuns.liu@foxmail.com"],

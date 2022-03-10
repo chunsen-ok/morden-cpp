@@ -26,35 +26,32 @@
 int main(int argc, char *argv[])
 {
     App app{"cman", "The C/C++ package manager."};
-    app.add_arg(Arg{"help", "Prints help information"})
-    .add_arg(Arg("version", "Print version info"))
+    app.set_version("0.0.1")
     .add_command(
-        Command{"new", "Create new package"}
-        .add_arg(Arg{"help", "Prints help information"})
-        .add_arg(Arg{"version", "Print version info"})
-        .add_arg(Arg{"name", "The package name, default is package directory name", "NAME"})
+        Command{"new", "Create new package", "path"}
+        .add_arg(Arg{"name", "The package name, default is package path name", "NAME"})
     )
     .add_command(
         Command{"build", "Build current package"}
-        .add_arg(Arg{"help", "Prints help information"})
-        .add_arg(Arg{"version", "Print version info"})
     )
     .add_command(
         Command{"run", "Run current package binary"}
-        .add_arg(Arg{"help", "Prints help information"})
-        .add_arg(Arg{"version", "Print version info"})
     )
     .add_command(
         Command{"install", "Install current package"}
-        .add_arg(Arg{"help", "Prints help information"})
-        .add_arg(Arg{"version", "Print version info"})
         .add_arg(Arg{"path", "Install target directory"})
     );
 
     app.parse(argc, argv);
 
     if (app.is_set("help")) {
-        app.showHelp();
+        app.show_help();
+    } else if (auto cmd = app.command_is_set("new"); cmd.has_value()) {
+        if (cmd->is_set("help")) {
+            cmd->show_help();
+        }
+    } else if (auto cmd = app.command_is_set("build"); cmd.has_value()) {
+        cmd->show_help();
     }
 
     return 0;

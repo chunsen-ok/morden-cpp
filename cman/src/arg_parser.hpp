@@ -5,6 +5,7 @@
 #include <vector>
 #include <iomanip>
 #include <iostream>
+#include <optional>
 
 class Arg
 {
@@ -26,7 +27,7 @@ public:
         return len;
     }
 
-    static void showHelp(const Arg &arg, int name_value_width)
+    static void show_help(const Arg &arg, int name_value_width)
     {
         std::cout << "    " << std::setw(name_value_width + 4) << std::left;
         if (!arg.value().empty()) {
@@ -49,14 +50,25 @@ struct ArgWrap {
 };
 
 template<typename T>
-class ArgContainer
+class ArgParser
 {
 public:
-    ArgContainer(const std::string &name, const std::string &desc)
-        : m_name(name), m_desc(desc) {}
+    ArgParser(const std::string &name, const std::string &desc, const std::string &value = std::string{})
+        : m_name{name}, m_desc{desc} , m_value{value}
+    {
+        m_args.push_back(ArgWrap{false, Arg{"help", "Prints help information"}});
+    }
 
     const std::string &name() const { return m_name; }
     const std::string &desc() const { return m_desc; }
+
+    T &set_version(const std::string &ver) {
+        m_version = ver;
+        if (!m_version.empty()) {
+            m_args.push_back(ArgWrap{false, Arg{"version", "Print version info"}});
+        }
+        return static_cast<T&>(*this);
+    }
 
     T &add_arg(const Arg &arg) {
         m_args.push_back(ArgWrap{false, arg});
@@ -72,8 +84,26 @@ public:
         return false;
     }
 
+    std::optional<Arg> arg(const std::string &name) {
+        for (const auto &wrap: m_args) {
+            if (wrap.arg.name() == name) {
+                return std::make_optional(wrap.arg);
+            }
+        }
+        return std::nullopt;
+    }
+
+    std::optional<Arg> arg_is_set(const std::string &name) {
+        for (const auto &wrap: m_args) {
+            if (wrap.found && wrap.arg.name() == name) {
+                return std::make_optional(wrap.arg);
+            }
+        }
+        return std::nullopt;
+    }
+
     virtual void parse(int argc, char *argv[]) {
-        for (int i = argc; i < argc; ++i) {
+        for (int i = 1; i < argc; ++i) {
             const char *arg = argv[i];
             const auto len = std::strlen(arg);
             if (arg[0] == '-' && len == 1) {
@@ -104,42 +134,46 @@ public:
         }
     }
 
-
 protected:
     std::string m_name;
     std::string m_desc;
+    std::string m_value;
+    std::string m_version;
     std::vector<ArgWrap> m_args;
 };
 
-class Command: public ArgContainer<Command>
+class Command: public ArgParser<Command>
 {
 public:
-    Command(const std::string &name, const std::string &desc)
-        : ArgContainer<Command>(name, desc) {}
+    Command(const std::string &name, const std::string &desc, const std::string &value = std::string{})
+        : ArgParser<Command>(name, desc, value) {}
 
-    virtual void showHelp() const {
-        std::cout << desc() << '\n' << std::endl;
-        std::cout << "Usage:" << std::endl;
+    virtual void show_help() const {
+        std::cout << desc() << "\n\n";
+        std::cout << "Usage:\n";
         std::cout << "    " << name();
-
         if (m_args.size() > 0) {
-            std::cout << " [OPTIONS]\n" << std::endl;
+            std::cout << " [OPTIONS]";
         }
+
+        if (!m_value.empty()) {
+            std::cout << " <" << m_value << ">";
+        }
+        std::cout << "\n" << std::endl;
 
         std::size_t len = 0;
         for (const auto &arg: m_args) {
             len = std::max(arg.arg.name_value_length(), len);
         }
 
+        if (!m_args.empty()) {
+            std::cout << "Options:\n";
+        }
+
         for (const auto &arg: m_args) {
-            Arg::showHelp(arg.arg, len);
+            Arg::show_help(arg.arg, len);
         }
     }
-
-protected:
-    std::string m_name;
-    std::string m_desc;
-    std::vector<ArgWrap> m_args;
 };
 
 struct CommandWrap {
@@ -147,23 +181,39 @@ struct CommandWrap {
     Command cmd;
 };
 
-class App: public ArgContainer<App>
+class App: public ArgParser<App>
 {
 public:
     App(const std::string &name, const std::string &desc)
-        : ArgContainer<App>(name, desc) {}
+        : ArgParser<App>(name, desc) {}
 
     App &add_command(const Command &cmd) {
         m_cmds.push_back(CommandWrap{false, cmd});
         return *this;
     }
 
-    void parse(int argc, char *argv[]) override {
-        for (int i = 1; i < argc; ++i) {
-            const char *arg = argv[i];
-            const auto len = std::strlen(arg);
+    std::optional<Command> command(const std::string &name) const {
+        for (const auto &wrap: m_cmds) {
+            if (wrap.cmd.name() == name) {
+                return std::make_optional(wrap.cmd);
+            }
+        }
+        return std::nullopt;
+    }
 
-            if (i == 1 && arg[0] != '-') {
+    std::optional<Command> command_is_set(const std::string &name) const {
+        for (const auto &wrap: m_cmds) {
+            if (wrap.found && wrap.cmd.name() == name) {
+                return std::make_optional(wrap.cmd);
+            }
+        }
+        return std::nullopt;
+    }
+
+    void parse(int argc, char *argv[]) override {
+        if (argc >= 2) {
+            const char *arg = argv[1];
+            if (arg[0] != '-') {
                 // commands
                 const auto cmd_name = std::string(arg);
                 auto it = std::find_if(m_cmds.begin(), m_cmds.end(), [cmd_name](const CommandWrap &wrap){
@@ -172,39 +222,15 @@ public:
                 if (it != m_cmds.end()) {
                     it->found = true;
                     it->cmd.parse(argc - 1, &argv[1]);
-                    break;
                 }
-            }
-            
-            if (arg[0] == '-' && len == 1) {
-                // standard io
-                // ...
-            } else if (std::strcmp(arg, "--") == 0) {
-                // option finished
-                // ...
-            } else if (arg[0] == '-') {
-                // options
-                if (arg[1] == '-') {
-                    // long options
-                    const auto arg_name = std::string(&arg[2]);
-                    auto it = std::find_if(m_args.begin(), m_args.end(), [arg_name](const ArgWrap &arg){
-                        return arg.arg.name() == arg_name;
-                    });
-                    if (it != m_args.end()) {
-                        it->found = true;
-                    }
-                } else {
-                    // short options
-                    // ...
-                }
-            } else {
-                // values
-                // ...
+                return;
             }
         }
+
+        ArgParser<App>::parse(argc, argv);
     }
 
-    void showHelp() const {
+    void show_help() const {
         std::cout << desc() << '\n' << std::endl;
         std::cout << "Usage:" << std::endl;
         std::cout << "    " << name();
@@ -217,7 +243,11 @@ public:
             std::cout << " [COMMAND]";
         }
 
-        std::cout << std::endl;
+        if (!m_value.empty()) {
+            std::cout << " <" << m_value << ">";
+        }
+
+        std::cout << "\n" << std::endl;
 
         std::size_t len{0};
         for (const auto &wrap: m_args) {
@@ -225,11 +255,11 @@ public:
         }
 
         if (m_args.size() > 0) {
-            std::cout << "\nOptions:\n";
+            std::cout << "Options:\n";
         }
 
         for (const auto &arg: m_args) {
-            Arg::showHelp(arg.arg, len);
+            Arg::show_help(arg.arg, len);
         }
 
         len = 0;
