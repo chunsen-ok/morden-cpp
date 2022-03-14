@@ -1,61 +1,48 @@
 #include <iostream>
 #include <string>
 
-template<int R, typename T>
-class Data
+class CanvasData
 {
 public:
-    void reset(const T &data) { inner = data; }
-    void reset(T &&data) { inner = std::move(data); }
-
-    const T &operator*() const { return inner; }
-    
-private:
-    T inner;
+    CanvasData() {
+        std::cout << "CanvasData" << std::endl;
+    }
+    ~CanvasData() {
+        std::cout << "~CanvasData" << std::endl;
+    }
 };
 
-enum Role {
-    None = 0,
-    PackageName,
-    PackageVersion,
-    PackageAuthors,
-    PackageDesc,
-    
-    Language,
-    LanguageType,
-    LanguageVersion,
-    
-    Dependencies,
-};
-
-class LangConfig
+class CanvasItem
 {
 public:
+    CanvasItem()
+        : m_data(new CanvasData)
+    {
+        std::cout << "CanvasItem" << std::endl;
+    }
+    CanvasItem(CanvasItem &&other) noexcept
+        : m_data(std::exchange(other.m_data, nullptr))  {}
+    ~CanvasItem() {
+        std::cout << "~CanvasItem" << std::endl;
+        if (m_data) {
+            delete m_data;
+        }
+        m_data = nullptr;
+    }
 
-private:
-    Data<LanguageType, std::string> m_type;
-    Data<LanguageVersion, std::string> m_version;
-};
-
-class PackageConfig
-{
-public:
+    CanvasItem &operator=(CanvasItem &&other) noexcept {
+        if (this != &other) {
+            m_data = std::exchange(other.m_data, nullptr);
+        }
+        return *this;
+    }
 
 private:
-    Data<PackageName, std::string> m_name;
-    Data<PackageVersion, std::string> m_version;
-    Data<PackageAuthors, std::string> m_authors;
-    Data<PackageDesc, std::string> m_desc;
-    Data<Language, LangConfig> m_lang;
-};
-
-class JsonWriter
-{
-public:
-
+    CanvasData *m_data;
 };
 
 int main() {
-    PackageConfig config;
+    CanvasItem a;
+    auto b = std::move(a);
     return 0;
 }

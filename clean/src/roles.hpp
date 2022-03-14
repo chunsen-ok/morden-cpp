@@ -4,10 +4,18 @@
 enum Role
 {
     RNone = 0,
-    RChatList,
-    RChatText,
 
+    RChatList,
+    RChat,
+    RChatText,
+    
     RFriendList,
+    RFriend,
+    RFriendName,
+
+    RMessageList,
+    RMessage,
+    RMessageContent,
 };
 
 using Variant = int;

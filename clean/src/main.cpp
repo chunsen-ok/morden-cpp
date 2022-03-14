@@ -33,6 +33,28 @@ const Action* dispatch(const Action &action)
     return nullptr;
 }
 
+class ViewState {};
+class AppStore {};
+struct MID {};
+class MessageContentFetcher
+{
+public:
+    MessageContentFetcher(AppStore *store, const MID &mid);
+
+    void progress_changed(int progress)
+    {
+        ViewState *state;
+        // state->set_value(mid, RFetchProgress, progress);
+    }
+
+    void finished() {
+        // mStore->set_value(mid, RResourceSavePath, path);
+    }
+
+private:
+    AppStore *mStore;
+};
+
 int main(int argc, char *argv[])
 {
     UpdateAction update(RChatText, 2343);

@@ -11,27 +11,29 @@ public:
         Update = 0,
         Add,
         Delete,
+        Other,
     };
 
-    Action(Role role, Type action): m_role(role), m_action(action) {}
+    Action(Type tp, Role role): m_type(tp), m_role(role) {}
 
     bool operator==(const Action &other) const {
-        return other.m_role == m_role && other.m_action == m_action;
+        return other.m_role == m_role && other.m_type == m_type;
     }
 
+    Type action() const { return m_type; }
     Role role() const { return m_role; }
-    Type action() const { return m_action; }
+    bool is(Type tp, Role role) const { return m_type == tp && m_role == role; }
 
 private:
+    Type m_type{Update};
     Role m_role{RNone};
-    Type m_action{Update};
 };
 
 class UpdateAction: public Action
 {
 public:
     UpdateAction(Role role, const Variant &data)
-        : Action(role, Update)
+        : Action(Update, role)
         , m_data(data) {}
 
     Variant data() const { return m_data; }
@@ -44,7 +46,7 @@ class AddAction: public Action
 {
 public:
     AddAction(Role role, const Variant &data)
-        : Action(role, Add)
+        : Action(Add, role)
         , m_data(data) {}
 
     Variant data() const { return m_data; }
@@ -56,7 +58,8 @@ private:
 class DeleteAction: public Action
 {
 public:
-    DeleteAction(Role role): Action(role, Delete) {}
+    DeleteAction(Role role)
+        : Action(Delete, role) {}
 };
 
 #endif
