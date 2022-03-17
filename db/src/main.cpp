@@ -1,5 +1,7 @@
 #include <cstdio>
+#include <iostream>
 #include <sqlite/sqlite3.h>
+#include <orm/query_builder.hpp>
 
 namespace {
 
@@ -27,7 +29,8 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
     return 0;
 }
 
-int main() {
+int run_sqlite()
+{
     sqlite3 *db{nullptr};
     char *zErrMsg{nullptr};
     int rc{0};
@@ -53,7 +56,14 @@ int main() {
         sqlite3_free(zErrMsg);
     }
 
-
     sqlite3_close(db);
+
     return 0;
+}
+
+int main() {
+    DbTable table("account");
+    table.add_column(DbColumn("uid", "INT4"));
+    table.set_pkeys({"uid"});
+    table.migrate();
 }
