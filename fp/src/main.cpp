@@ -36,8 +36,9 @@
 #include <iostream>
 #include <functional>
 
-//! 优化 DataPath
+//! 优化 DataPath，支持payload
 //! 如何简化 selector
+//! 如果将业务逻辑（修改data数据的逻辑）放在action中，存在问题，可能会存在多线程访问data的情况。
 
 namespace core {
 
@@ -180,7 +181,8 @@ class Action
 {
 public:
     virtual ~Action() = default;
-    virtual DataPath exec(T *data, DataStore<T> *store) = 0;
+    virtual DataPath exec(T *data, DataStore<T> *store) const { return DataPath{}; }
+    virtual DataPath exec(T *data, DataStore<T> *store) { return DataPath{}; }
 };
 
 template<typename T>
@@ -194,16 +196,48 @@ public:
 
     void dispatch(const Action<T> &action)
     {
+        std::cout << __LINE__ << std::endl;
         const auto path = action.exec(&m_data, this);
         if (!path.empty()) {
-            data_changed_signal(path);
+            std::cout << __LINE__ << std::endl;
+            call(path);
+            std::cout << __LINE__ << std::endl;
         }
     }
 
-    void data_changed_signal(const DataPath &data);
+    void subscribe(std::function<void(const DataPath&)> &&subscriber)
+    {
+        m_subscribers.push_back(std::move(subscriber));
+    }
+
+private:
+    void call(const DataPath &data)
+    {
+        for (auto &fn: m_subscribers) {
+            fn(data);
+        }
+    }
 
 private:
     T m_data;
+    std::vector<std::function<void(const DataPath&)>> m_subscribers;
+};
+
+}
+
+namespace infras {
+
+class FileFetcher
+{
+public:
+    FileFetcher(const std::string &url): m_url{url} {}
+
+    void finished(std::function<void(const std::string&)> &&cb) {
+        cb(m_url);
+    }
+
+private:
+    std::string m_url;
 };
 
 }
@@ -222,12 +256,13 @@ public:
         Content,
     };
 
+    std::string content;
 };
 
 class MessageList
 {
 public:
-
+    std::vector<Message> datas;
 };
 
 class AppData
@@ -241,47 +276,96 @@ public:
     MessageList messages;
 };
 
+using DataStore = core::DataStore<AppData>;
+using Action = core::Action<AppData>;
+
+class UpdateMessageInfo: public Action
+{
+public:
+    UpdateMessageInfo(): Action{} {}
+
+    core::DataPath exec(AppData *data, DataStore *store) const override
+    {
+        return core::DataPath{"msgs"};
+    }
+};
+
+class DownloadFileAsync: public Action
+{
+public:
+    DownloadFileAsync(const std::string &oss): Action(), m_url{oss} {}
+
+    core::DataPath exec(AppData *data, DataStore *store) const override
+    {
+        if (data->messages.datas.size() > 0) {
+            auto &msg = data->messages.datas.at(0);
+            msg.content = "downloading";
+        }
+
+        auto fetcher = new infras::FileFetcher(m_url);
+        fetcher->finished([store](const std::string &path){
+            std::cout << __LINE__ << std::endl;
+            store->dispatch(UpdateMessageInfo{});
+            std::cout << __LINE__ << std::endl;
+        });
+        delete fetcher;
+
+        core::DataPath path("msgs");
+        path.join(0).join(Message::Content);
+        return path;
+    }
+
+private:
+    const std::string &m_url;
+};
+
+}
+
+namespace view {
+
 }
 
 using namespace core;
 using namespace data;
 
 int main() {
-    DataPath path("msgs");
-    path
-    .join(new NumberFilterIndex{[](int index){ return index % 2 == 0; }})
-    .join(new NumberCollectionIndex{Message::SenderID, Message::Name, Message::Avatar});
+    data::AppData data;
+    data::DataStore store{std::move(data)};
 
-    // selectors
-    for (auto index = path.next(); index != nullptr; index = path.next()) {
-        if (index->type() == DataIndex::Number) {
-            auto num = static_cast<const NumberIndex*>(index);
-            if (num) {
-                std::cout << "number: " << num->value() << std::endl;
-            }
-        } else if (index->type() == DataIndex::String) {
-            auto str = static_cast<const StringIndex*>(index);
-            if (str) {
-                std::cout << "string: " << str->value() << std::endl;
-            }
-        } if (index->type() == DataIndex::NumberFilter) {
-            auto num = static_cast<const NumberFilterIndex*>(index);
-            if (num) {
-                for (auto v: {1,2,3,4,5,6,7,8}) {
-                    if (num->exec(v)) {
-                        std::cout << "number filter: " << v << std::endl;
+    store.subscribe([](DataPath path) {
+        // selectors
+        for (auto index = path.next(); index != nullptr; index = path.next()) {
+            if (index->type() == DataIndex::Number) {
+                auto num = static_cast<const NumberIndex*>(index);
+                if (num) {
+                    std::cout << "number: " << num->value() << std::endl;
+                }
+            } else if (index->type() == DataIndex::String) {
+                auto str = static_cast<const StringIndex*>(index);
+                if (str) {
+                    std::cout << "string: " << str->value() << std::endl;
+                }
+            } if (index->type() == DataIndex::NumberFilter) {
+                auto num = static_cast<const NumberFilterIndex*>(index);
+                if (num) {
+                    for (auto v: {1,2,3,4,5,6,7,8}) {
+                        if (num->exec(v)) {
+                            std::cout << "number filter: " << v << std::endl;
+                        }
+                    }
+                }
+            } if (index->type() == DataIndex::StringFilter) {
+                auto num = static_cast<const NumberCollectionIndex*>(index);
+                if (num) {
+                    for (auto v: {1,2,3,4,5,6,7,8}) {
+                        std::cout << "number filter: " << num->exec(v) << std::endl;
                     }
                 }
             }
-        } if (index->type() == DataIndex::StringFilter) {
-            auto num = static_cast<const NumberCollectionIndex*>(index);
-            if (num) {
-                for (auto v: {1,2,3,4,5,6,7,8}) {
-                    std::cout << "number filter: " << num->exec(v) << std::endl;
-                }
-            }
         }
-    }
+    });
+
+    store.dispatch(DownloadFileAsync{"https://oss.com/res"});
 
     return 0;
 }
