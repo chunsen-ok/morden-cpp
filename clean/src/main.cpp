@@ -17,22 +17,36 @@
 //! 
 
 #include <iostream>
-#include "actions.hpp"
+#include <core/data_store.hpp>
+#include <core/action.hpp>
 
-namespace view {}
-namespace vmodel {}
-namespace service {
+class AppData
+{
+public:
+    int num;
+};
+using AppStore = DataStore<AppData>;
+using AppAction = Action<AppData>;
 
-    class AppService
+class IncNumber: public AppAction
+{
+public:
+    IncNumber(int inc): AppAction{}, m_num{inc} {}
+
+    void exec(AppData *data, AppStore*)
     {
-    public:
-        
-    };
+        data->num += m_num;
+    }
 
-}
-namespace infras {}
+private:
+    const int m_num;
+};
 
 int main(int argc, char *argv[])
 {
+    DataStore<AppData> store{AppData{}};
+
+    store.dispatch(IncNumber{1001});
+
     return 0;
 }
