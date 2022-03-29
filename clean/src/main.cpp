@@ -1,45 +1,49 @@
-//! https://my.oschina.net/u/5447363/blog/5460840
-//!
-//! clean/
-//! |- core
-//! |  |- service
-//! |- ui
-//! |  |- cli
-//! |  |- gui
-//! |  |- ...
-//! |- infras
-//! |   |- db
-//! |   |- disk
-//! |   |- web service
-//! |- tests
-//!
-//! 不同 data 中存在相同 role 时，如何处理？（实现时应当避免这种情况出现，即使真的需要相同的role，也应该近一步区分它们（比如通过数据中携带ID），使之唯一。）
-//! 
-
+//! 如何建立资源并管理。
 #include <iostream>
 #include <core/data_store.hpp>
 #include <core/action.hpp>
+
+template<typename T>
+class observable
+{
+public:
+
+};
 
 class AppData
 {
 public:
     int num;
+    observable<bool> open;
 };
 using AppStore = DataStore<AppData>;
-using AppAction = Action<AppData>;
+using Task = Action<AppData>;
+using AsyncTask = AsyncAction<AppData>;
 
-class IncNumber: public AppAction
+class IncNumber: public Task
 {
 public:
-    IncNumber(int inc): AppAction{}, m_num{inc} {}
+    IncNumber(int inc): Task{}, m_num{inc} {}
 
-    void exec(AppData *data, AppStore*)
+    void exec(AppData *data, AppStore*) const override
     {
+        std::cout << "inc" << std::endl;
         data->num += m_num;
     }
 
 private:
     const int m_num;
+};
+
+class Login: public AsyncTask
+{
+public:
+    Login(): AsyncTask() {}
+
+    void exec(AppData *data, AppStore *store) override
+    {
+        std::cout << "login" << std::endl;
+    }
 };
 
 int main(int argc, char *argv[])
@@ -48,5 +52,9 @@ int main(int argc, char *argv[])
 
     store.dispatch(IncNumber{1001});
 
+    auto login = new Login;
+    store.dispatch(login);
+    delete login;
+    
     return 0;
 }

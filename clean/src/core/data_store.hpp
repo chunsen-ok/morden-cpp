@@ -17,7 +17,7 @@ public:
         action.exec(&m_data, this);
     }
 
-    void dispatch(Action<T> *action)
+    void dispatch(AsyncAction<T> *action)
     {
         action->exec(&m_data, this);
     }
