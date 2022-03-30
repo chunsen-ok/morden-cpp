@@ -1,60 +1,31 @@
 //! 如何建立资源并管理。
+//! 资源独立于Data，通过依赖注入
+//! Data 中包含关于本数据的操作逻辑，并会通知外部
+//! 什么都用Action包裹，比较繁琐，没有必要；可以直接在Data中实现这些逻辑
 #include <iostream>
-#include <core/data_store.hpp>
-#include <core/action.hpp>
+#include <service/services.hpp>
+#include <infras/network.hpp>
+#include <infras/local_storage.hpp>
+#include <presenter/server_event_receiver.hpp>
 
-template<typename T>
-class observable
-{
-public:
-
-};
-
-class AppData
-{
-public:
-    int num;
-    observable<bool> open;
-};
-using AppStore = DataStore<AppData>;
-using Task = Action<AppData>;
-using AsyncTask = AsyncAction<AppData>;
-
-class IncNumber: public Task
-{
-public:
-    IncNumber(int inc): Task{}, m_num{inc} {}
-
-    void exec(AppData *data, AppStore*) const override
-    {
-        std::cout << "inc" << std::endl;
-        data->num += m_num;
-    }
-
-private:
-    const int m_num;
-};
-
-class Login: public AsyncTask
-{
-public:
-    Login(): AsyncTask() {}
-
-    void exec(AppData *data, AppStore *store) override
-    {
-        std::cout << "login" << std::endl;
-    }
-};
+#include <rxcpp/rx.hpp>
 
 int main(int argc, char *argv[])
 {
-    DataStore<AppData> store{AppData{}};
+    LocalStorage storage;
+    Network network;
+    
+    AppData data(&storage, &network);
+    DataStore<AppData> store{std::move(data)};
+
+    ServerEventReceiver receiver(&store);
+    receiver.run();
 
     store.dispatch(IncNumber{1001});
 
     auto login = new Login;
     store.dispatch(login);
     delete login;
-    
+
     return 0;
 }

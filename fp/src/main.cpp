@@ -50,8 +50,41 @@
 // 选择：特例化，递归继承
 // 循环：递归（函数递归，类递归）调用
 
+class Range
+{
+public:
+    Range(int from, int to)
+        : m_from(from), m_to(to) {}
+
+    class iterator
+    {
+    public:
+        iterator(int v): value(v) {}
+        friend bool operator!=(const iterator &lhs, const iterator &rhs) {
+            return lhs.value != rhs.value;
+        }
+        iterator &operator++() {
+            ++value;
+            return *this;
+        }
+        int operator*() const { return value; }
+    private:
+        int value;
+    };
+
+    iterator begin() { return iterator(m_from); }
+    iterator end() { return iterator(m_to); }
+
+private:
+    int m_from;
+    int m_to;
+};
 
 int main()   {
+
+    for (int num: Range(1, 10)) {
+        std::cout << num << std::endl;
+    }
 
     return 0;
 }

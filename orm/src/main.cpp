@@ -1,58 +1,43 @@
 #include <iostream>
+#include <string>
+#include <memory>
 
-template<typename T>
-void create()
+class SqlBuilder
 {
-    T table;
-
-    std::cout << "CREATE TABLE IF NOT EXISTS " << table.table_name() << std::endl;
-}
-
-enum FieldType 
-{
-    TEXT = 0,
-    INTEGER,
-    REAL,
-    NUMERIC,
-    BLOB,
+public:
+    template<typename T>
+    void create()
+    {
+        const T t;
+        std::cout << "CREATE TABLE IF NOT EXISTS " << T::name() << "(";
+        std::cout << ");";
+    }
 };
 
-template<typename T>
 class Field
 {
 public:
 
-    Field(const std::string &name, FieldType type)
-        : m_type(type), m_name(name) {}
-
-    FieldType type() const { return m_type; }
-    std::string name() const { return m_name; }
-
-private:
-    FieldType m_type;
-    std::string m_name;
 };
+using FieldPtr = std::shared_ptr<Field>;
 
-struct User
+struct SysKv
 {
-    static std::string table_name() { return "user"; }
+    static std::string name() { return "sys_kv"; }
+
     
-    void enumerate_fields()
-    {
-
-    }
-
-    Field<int> num{"num", INTEGER};
-    Field<std::string> name{"name", TEXT};
+    int role;
+    std::string name;
+    std::string value;
+    FieldPtr ext0;
+    FieldPtr ext1;
+    FieldPtr ext2;
 };
 
 int main(int argc, char *argv[])
 {
-    create<User>();
-    auto p = &User::num;
-    std::cout << p << &User::name << std::endl;
+    SqlBuilder sql;
+    sql.create<SysKv>();
 
-    User u;
-    std::cout << (u.*p).name() << std::endl;
     return 0;
 }
