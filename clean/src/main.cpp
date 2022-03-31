@@ -2,6 +2,9 @@
 //! 资源独立于Data，通过依赖注入
 //! Data 中包含关于本数据的操作逻辑，并会通知外部
 //! 什么都用Action包裹，比较繁琐，没有必要；可以直接在Data中实现这些逻辑
+//! 
+//! Presenter依赖较多data时，如何获取data
+//! 组件间model的通信
 #include <iostream>
 #include <service/services.hpp>
 #include <infras/network.hpp>
