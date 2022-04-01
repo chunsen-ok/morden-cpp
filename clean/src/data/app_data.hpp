@@ -3,10 +3,27 @@
 
 #include <core/data_store.hpp>
 #include <core/action.hpp>
-#include <rxcpp/rx.hpp>
 
 class LocalStorage;
 class Network;
+
+class Chats
+{
+public:
+
+};
+
+class Chatting
+{
+public:
+    
+};
+
+class Chattings
+{
+public:
+
+};
 
 class AppData
 {
@@ -15,7 +32,9 @@ public:
         : m_storage(storage)
         , m_network(network) {}
 
-    rxcpp::observable<int> num;
+    int num{0};
+    Chats chats;
+    Chattings chattings;
 
 private:
     LocalStorage *m_storage;

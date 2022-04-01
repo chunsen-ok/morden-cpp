@@ -5,30 +5,16 @@
 
 using Task = Action<AppData>;
 using AsyncTask = AsyncAction<AppData>;
+using WrapTask = WrapAction<AppData>;
 
-class IncNumber: public Task
-{
-public:
-    IncNumber(int inc): Task{}, m_num{inc} {}
-
-    void exec(AppData *data, AppStore*) const override
-    {
-        std::cout << "inc" << std::endl;
-    }
-
-private:
-    const int m_num;
-};
+WrapTask inc_number(int inc);
 
 class Login: public AsyncTask
 {
 public:
     Login(): AsyncTask() {}
 
-    void exec(AppData *data, AppStore *store) override
-    {
-        std::cout << "login" << std::endl;
-    }
+    void exec(AppData *data, AppStore *store) override;
 };
 
 #endif

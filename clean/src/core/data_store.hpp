@@ -22,9 +22,9 @@ public:
         action->exec(&m_data, this);
     }
 
-    void subscribe()
+    void dispatch(const WrapAction<T> &action)
     {
-        
+        action(&m_data, this);
     }
 
 private:

@@ -1,17 +1,14 @@
 //! 如何建立资源并管理。
 //! 资源独立于Data，通过依赖注入
 //! Data 中包含关于本数据的操作逻辑，并会通知外部
-//! 什么都用Action包裹，比较繁琐，没有必要；可以直接在Data中实现这些逻辑
 //! 
-//! Presenter依赖较多data时，如何获取data
-//! 组件间model的通信
+//! 组件间model的层级依赖，组件间model的通信
+//! 模块、组件间要相互独立，可独立替换、修改
 #include <iostream>
-#include <service/services.hpp>
 #include <infras/network.hpp>
 #include <infras/local_storage.hpp>
-#include <presenter/server_event_receiver.hpp>
-
-#include <rxcpp/rx.hpp>
+#include <service/services.hpp>
+#include <service/server_event_receiver.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -24,7 +21,8 @@ int main(int argc, char *argv[])
     ServerEventReceiver receiver(&store);
     receiver.run();
 
-    store.dispatch(IncNumber{1001});
+    store.dispatch(inc_number(1001));
+    store.dispatch(inc_number(1254));
 
     auto login = new Login;
     store.dispatch(login);
