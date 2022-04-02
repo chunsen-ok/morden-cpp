@@ -4,6 +4,8 @@
 //! 
 //! 组件间model的层级依赖，组件间model的通信
 //! 模块、组件间要相互独立，可独立替换、修改
+//! 子组件间相互独立，涉及多组件的时候，子组件发出通知，由父组件调配各子组件完成功能。
+//! 提供一种映射，缓存机制
 #include <iostream>
 #include <infras/network.hpp>
 #include <infras/local_storage.hpp>
