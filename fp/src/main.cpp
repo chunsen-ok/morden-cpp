@@ -35,6 +35,7 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
 #include <iostream>
 #include <functional>
 #include <type_traits>
@@ -50,41 +51,26 @@
 // 选择：特例化，递归继承
 // 循环：递归（函数递归，类递归）调用
 
-class Range
+
+template<typename F, typename ... Args>
+class A
 {
 public:
-    Range(int from, int to)
-        : m_from(from), m_to(to) {}
+    A(F &&fn, Args ... args)
+        : m_fn(std::move(fn))
+        , m_args(std::make_tuple<Args...>(std::forward<Args>(args)...)) {}
 
-    class iterator
-    {
-    public:
-        iterator(int v): value(v) {}
-        friend bool operator!=(const iterator &lhs, const iterator &rhs) {
-            return lhs.value != rhs.value;
-        }
-        iterator &operator++() {
-            ++value;
-            return *this;
-        }
-        int operator*() const { return value; }
-    private:
-        int value;
-    };
-
-    iterator begin() { return iterator(m_from); }
-    iterator end() { return iterator(m_to); }
+    void call()  { std::apply(m_fn, m_args); }
 
 private:
-    int m_from;
-    int m_to;
+    F m_fn;
+    std::tuple<Args...> m_args;
 };
 
-int main()   {
-
-    for (int num: Range(1, 10)) {
-        std::cout << num << std::endl;
-    }
+int main()
+{
+    auto a = A([](int num, const std::string &name){ std::cout << "hello: " << num << name << std::endl; }, 12, "2354");
+    a.call();
 
     return 0;
 }
