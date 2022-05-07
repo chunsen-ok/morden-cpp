@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
+#include <memory>
 
-int main() {
+int main() 
+{
     return 0;
 }
