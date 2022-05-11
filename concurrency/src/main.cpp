@@ -21,17 +21,31 @@ template<typename T>
 class Store;
 
 template<typename T>
+struct AsyncAction
+{
+    virtual ~AsyncAction() = default;
+    virtual void exec(T *data, Store<T> *store) = 0;
+};
+
+template<typename T>
 class Store
 {
 public:
     Store(T &&data): m_data(std::move(data)) {}
 
-    // 实现多线程访问该方法
     template<typename Callable>
-    void dispatch(Callable &&action)
+    using invocable_action = std::enable_if_t<std::is_invocable<Callable, T*, Store<T>*>::value>;
+
+    template<typename Callable>
+    auto dispatch(Callable &&action) -> invocable_action<Callable>
     {
         std::cout << "thread: " << std::this_thread::get_id() << std::endl;
         std::invoke(std::move(action), &m_data, this);
+    }
+
+    void dispatch(AsyncAction<T> *action)
+    {
+        action->exec(&m_data, this);
     }
 
 private:
@@ -46,6 +60,21 @@ public:
 
 using DataStore = Store<Data>;
 using Action = std::function<void(Data*, Store<Data>*)>;
+
+struct ActionObj: AsyncAction<Data>
+{
+    void exec(Data *data, Store<Data> *store)
+    {
+        std::cout << "Hello:" << data->number << std::endl;
+    }
+};
+
+Action action_wrap(ActionObj *action)
+{
+    return [action](Data *data, Store<Data> *store){
+        action->exec(data, store);
+    };
+}
 
 Action reset_number(int num)
 {
@@ -71,17 +100,13 @@ int main(int argc, char *argv[])
 {
     std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
     Store<Data> store{Data{}};
-    store.dispatch(reset_number(10));
+    
+    store.dispatch(reset_number(20));
+    store.dispatch(ActionObj{});
 
-    // std::thread t([](DataStore *store){
-    //     store->dispatch(inc_number);
-    // }, &store);
-    // t.join();
-
-    for (int dy = 0; dy <= 10; ++dy) {
-        const auto x = pixel_circle(10.0, dy);
-        std::cout  << dy << ", " << std::round(x) << std::endl;
-    }
+    auto action = new ActionObj;
+    store.dispatch(action);
+    delete action;
 
     return 0;
 }

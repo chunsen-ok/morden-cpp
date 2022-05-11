@@ -30,20 +30,20 @@
 
 //! 如果将业务逻辑（修改data数据的逻辑）放在action中，存在问题，可能会存在多线程访问data的情况。
 
-#include <string>
-#include <vector>
-#include <tuple>
+// 1. 模板参数
+// - 非类型参数
+// - 类型参数
+// - 模板参数
+// - 以上类型的参数包
+//
+// 类型函数：接受至少一个类型作为参数，或者生成至少一个类型。
+// 类型谓词：接受类型作为类型参数，输出布尔值。
+// 选择：特例化，递归继承
+// 循环：递归（函数递归，类递归）调用
+
 #include <iostream>
 #include <functional>
-#include <type_traits>
-
-template<typename T>
-struct Fn
-{
-    
-};
 
 int main() {
-
     return 0;
 }

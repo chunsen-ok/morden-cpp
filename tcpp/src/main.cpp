@@ -21,60 +21,9 @@
 
 #include <iostream>
 #include <string>
-#include <functional>
-#include <type_traits>
+#include <memory>
 
-template<typename T, typename = void>
-struct dispatch {};
-
-template<typename T>
-struct dispatch<T, typename std::invoke_result_t<T, int>>
+int main() 
 {
-    using type = typename std::invoke_result_t<T, int>;
-
-    static void call(T &&fn, int a, int)
-    {
-        std::invoke(std::move(fn), a);
-    }
-};
-
-template<typename T>
-struct dispatch<T, typename std::invoke_result_t<T, int, int>>
-{
-    using type = typename std::invoke_result_t<T, int, int>;
-
-    static void call(T &&fn, int a, int b)
-    {
-        std::invoke(std::move(fn), a, b);
-    }
-};
-
-void a(int a) {
-    std::cout << a << std::endl;
-}
-
-void b(int a, int b) {
-    std::cout << a << ", " << b << std::endl;
-}
-
-template<typename F, typename = typename dispatch<F>::type>
-void exec(F &&fn)
-{
-    dispatch<F>::call(std::move(fn), 1, 2);
-}
-
-struct Action
-{
-    void operator()(int a, int b)
-    {
-        std::cout << a << " - " << b << std::endl;
-    }
-};
-
-int main() {
-    exec(a);
-    exec(b);
-    exec([](int a){ std::cout << a << std::endl; });
-    exec(Action{});
     return 0;
 }
