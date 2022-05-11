@@ -28,9 +28,6 @@
 // decltype 推断类型
 // declval 
 
-// 条件 - 模板参数特例化
-// 循环 - 递归
-
 //! 如果将业务逻辑（修改data数据的逻辑）放在action中，存在问题，可能会存在多线程访问data的情况。
 
 #include <string>
@@ -40,37 +37,13 @@
 #include <functional>
 #include <type_traits>
 
-// 1. 模板参数
-// - 非类型参数
-// - 类型参数
-// - 模板参数
-// - 以上类型的参数包
-//
-// 类型函数：接受至少一个类型作为参数，或者生成至少一个类型。
-// 类型谓词：接受类型作为类型参数，输出布尔值。
-// 选择：特例化，递归继承
-// 循环：递归（函数递归，类递归）调用
-
-
-template<typename F, typename ... Args>
-class A
+template<typename T>
+struct Fn
 {
-public:
-    A(F &&fn, Args ... args)
-        : m_fn(std::move(fn))
-        , m_args(std::make_tuple<Args...>(std::forward<Args>(args)...)) {}
-
-    void call()  { std::apply(m_fn, m_args); }
-
-private:
-    F m_fn;
-    std::tuple<Args...> m_args;
+    
 };
 
-int main()
-{
-    auto a = A([](int num, const std::string &name){ std::cout << "hello: " << num << name << std::endl; }, 12, "2354");
-    a.call();
+int main() {
 
     return 0;
 }
