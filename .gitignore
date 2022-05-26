@@ -36,3 +36,4 @@ robot.sh
 build*/
 dist/
 .target/
+target/
