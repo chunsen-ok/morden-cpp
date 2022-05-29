@@ -49,15 +49,27 @@ private:
 
 struct User
 {
+    User(const std::string &name): m_name(name) {}
+
     Field<int> id{"id"};
     Field<std::string> name{"name"};
     Field<int> age{"age"};
+
+    void migrate()
+    {
+        std::cout << "CREATE TABLE IF NOT EXISTS " << m_name << "(" << std::endl;         
+        std::cout << id.expr() << "," << std::endl;
+        std::cout << name.expr() << "," << std::endl;
+        std::cout << age.expr() << std::endl;
+        std::cout << ");" << std::endl;
+    }
+
+private:
+    std::string m_name;
 };
 
 int main() {
-    User user;
-    std::cout << user.id.expr() << std::endl;
-    std::cout << user.name.expr() << std::endl;
-    std::cout << user.age.expr() << std::endl;
+    User user{"users"};
+    user.migrate();
     return 0;
 }

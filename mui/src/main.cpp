@@ -12,7 +12,7 @@ enum class UserRole
     Avatar,
 };
 
-struct UserItem
+struct User
 {
     using Role = UserRole;
 
@@ -27,19 +27,25 @@ public:
     User user(UserID id) const;
 };
 
+using GroupID = int;
+
 enum class GroupRole
 {
+    Id,
     Name,
     Avatar,
 };
 
-struct GroupItem
+struct Group
 {
     using Role = GroupRole;
     
+    GroupID id;
     std::string name;
     std::string avatar;
 };
+
+using ChatViewID = int;
 
 enum class ChatViewRole
 {
@@ -49,23 +55,43 @@ enum class ChatViewRole
 
 struct ChatViewItem
 {
+    ChatViewID id;
     std::string name;
     std::string avatar;
 
     template<typename Data>
     void update(typename Data::Role role, const Data &data)
     {
-        if constexpr (std::is_same_v<Data, UserItem>) {
+        if constexpr (std::is_same_v<Data, User>) {
+            updateFromUser(role, data);
+        } else if constexpr (std::is_same_v<Data, Group>) {
+            updateFromGroup(role, data);
+        }
+    }
 
-        } else if constexpr (std::is_same_v<Data, GroupItem>) {
+private:
+    void updateFromUser(UserRole role, const User &data)
+    {
+        if (UserRole::Name == role) {
+            name = data.name;
+        } else if (UserRole::Avatar == role) {
+            avatar = data.avatar;
+        }
+    }
 
+    void updateFromGroup(GroupRole role, const Group &data)
+    {
+        if (GroupRole::Name == role) {
+            name = data.name;
+        } else if (GroupRole::Avatar == role) {
+            avatar = data.avatar;
         }
     }
 };
 
 int main() {
-    auto user = UserItem{};
-    auto group = GroupItem{};
+    auto user = User{};
+    auto group = Group{};
     auto v = ChatViewItem{};
 
     v.update(UserRole::Name, user);
