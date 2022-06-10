@@ -14,12 +14,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 {
     // 窗口类：定义多个窗口可能共有的一组行为。
     LPCWSTR CLASS_NAME  = L"Sample Window Class";
-    WNDCLASS wc = { };
+    WNDCLASSEX wc = { };
+    wc.cbSize = sizeof(WNDCLASSEX);
     wc.lpfnWndProc   = WindowProc; // 窗口过程
     wc.hInstance     = hInstance; // 应用实例
     wc.lpszClassName = CLASS_NAME; // 窗口类标识字符串
     // 向操作系统注册窗口类
-    RegisterClass(&wc);
+    RegisterClassEx(&wc);
 
     // 创建窗口实例
     // 每个特定窗口的唯一数据被称为**实例数据**
@@ -77,7 +78,6 @@ LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         HBRUSH hbr = CreateSolidBrush(RGB(100, 100, 100));
         FillRect(hdc, &ps.rcPaint, hbr);
         EndPaint(hwnd, &ps);
-
         DeleteObject((HGDIOBJ)hbr);
     }
         return 0;

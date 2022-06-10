@@ -11,20 +11,12 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 1
-include(GenerateExportHeader)
-
 find_package(Qt6 COMPONENTS Core REQUIRED)
 
 add_library(AnyLib SHARED
     src/anylib.cpp
     src/session_data.cpp
-    # src/private/data_private.hpp
-    # src/private/data_private.cpp
 )
-
-# 2 
-generate_export_header(AnyLib)
 
 target_include_directories(AnyLib INTERFACE 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -51,6 +43,7 @@ install(TARGETS AnyLib
     RUNTIME DESTINATION bin
     INCLUDES DESTINATION include
 )
+
 install(
     FILES $<TARGET_PDB_FILE:AnyLib>
     DESTINATION "bin"
@@ -62,7 +55,10 @@ install(DIRECTORY include/anylib
     COMPONENT AnyLib
 )
 
+# ======== Package Config ========
+
 include(CMakePackageConfigHelpers)
+
 write_basic_package_version_file(
   "${CMAKE_CURRENT_BINARY_DIR}/AnyLib/AnyLibConfigVersion.cmake"
   VERSION ${PROJECT_VERSION}
@@ -73,17 +69,20 @@ export(EXPORT AnyLibTargets
     FILE "${CMAKE_CURRENT_BINARY_DIR}/AnyLib/AnyLibTargets.cmake"
     NAMESPACE AnyLib::
 )
+
 configure_file(cmake/AnyLibConfig.cmake
     "${CMAKE_CURRENT_BINARY_DIR}/AnyLib/AnyLibConfig.cmake"
     COPYONLY
 )
 
 set(ConfigPackageLocation lib/cmake/AnyLib)
+
 install(EXPORT AnyLibTargets
     FILE AnyLibTargets.cmake
     NAMESPACE AnyLib::
     DESTINATION ${ConfigPackageLocation}
 )
+
 install(FILES 
     cmake/AnyLibConfig.cmake
     "${CMAKE_CURRENT_BINARY_DIR}/AnyLib/AnyLibConfigVersion.cmake"
