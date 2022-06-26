@@ -3,6 +3,9 @@
 
 class WindowState
 {
+public:
+
+private:
     int mTimes{0};
 };
 

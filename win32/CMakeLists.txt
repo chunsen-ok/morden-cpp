@@ -19,3 +19,5 @@ set_target_properties(win32 PROPERTIES
 target_compile_definitions(win32
     PRIVATE UNICODE _UNICODE
 )
+
+target_link_libraries(win32 PRIVATE Dwmapi)
