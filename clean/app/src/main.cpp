@@ -1,50 +1,70 @@
+#include <vector>
+#include <string>
 #include <iostream>
-#include <memory>
 
-struct PeerId
-{
-    int type;
-    std::int64_t uid;
-};
-
-class Peer
+class HistoryView {};
+class HistoryModel {};
+class HistoryItemData
 {
 public:
-    Peer(const PeerId &id): mId(id) {}
-    virtual ~Peer() = default;
-
-    PeerId id() const { return mId; }
-    
-private:
-    PeerId mId;
+    virtual ~HistoryItemData() = default;
 };
 
-class User: public Peer
+class TextHistory: public HistoryItemData
 {
 public:
-
+    TextHistory(const std::string &text): HistoryItemData(), m_text(text) {}
+    std::string m_text;
 };
 
-class Group: public Peer
+class PictureHistory: public HistoryItemData
 {
 public:
-
+    PictureHistory(int size): HistoryItemData(), m_size(size) {}
+    int m_size;
 };
 
-class SysUser: public Peer
+class AbstractHistoryItem
 {
 public:
+    virtual ~AbstractHistoryItem() = default;
+    virtual void paint(HistoryModel *model, HistoryView *view) = 0;
+    virtual void layout(HistoryModel *model, HistoryView *view) = 0;
+    virtual void event(HistoryModel *model, HistoryView *view) = 0;
 };
 
-class FileTransfer: public Peer
+namespace HistoryCanvas
+{
+
+class Tip: public AbstractHistoryItem
 {
 public:
-    FileTransfer(User *user);
+    void paint(HistoryModel *model, HistoryView *view) override
+    {
+        std::cout << "tip: " << tip() << std::endl;
+    }
 
+protected:
+    virtual std::string tip() const = 0;
+};
+
+class Chat: public AbstractHistoryItem
+{
+public:
+    void paint(HistoryModel *model, HistoryView *view) override
+    {
+
+    }
+
+protected:
     std::string name() const;
     std::string avatar() const;
+
 };
 
-int main() {
-    // ...
+};
+
+int main()
+{
+    return 0;
 }
