@@ -33,6 +33,8 @@
 
 robot.sh
 .vscode/
+.vs/
+out/build/
 build*/
 dist/
 .target/
