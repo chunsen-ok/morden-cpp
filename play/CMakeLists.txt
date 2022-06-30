@@ -9,3 +9,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(src/tcpclient)
 add_subdirectory(src/tcpserver)
+add_subdirectory(src/ranges)
