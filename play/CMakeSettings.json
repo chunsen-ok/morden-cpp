@@ -7,7 +7,7 @@
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "buildRoot": "${projectDir}\\target\\vs2019\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
-      "cmakeCommandArgs": "-DCMAKE_PREFIX_PATH=\"F:/sdk/boost/lib/cmake\" -T v142",
+      "cmakeCommandArgs": "-DCMAKE_PREFIX_PATH=\"F:/sdk/lib/cmake;D:\\Qtz\\6.3.0\\msvc2019_64\\lib\\cmake\" -T v142",
       "buildCommandArgs": "",
       "ctestCommandArgs": ""
     }
