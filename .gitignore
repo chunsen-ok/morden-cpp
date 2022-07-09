@@ -31,6 +31,8 @@
 *.out
 *.app
 
+CMakeSettings.json
+
 robot.sh
 .vscode/
 .vs/

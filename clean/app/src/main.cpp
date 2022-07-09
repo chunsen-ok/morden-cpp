@@ -13,11 +13,6 @@ struct PeerId
         System,
     };
 
-    constexpr PeerId(Type type, std::int64_t uid)
-        : mType(type)
-        , mUid(uid)
-    {}
-
     constexpr PeerId(const PeerId &other)
         : mType(other.mType)
         , mUid(other.mUid)
@@ -28,14 +23,14 @@ struct PeerId
         , mUid(std::move(other.mUid))
     {}
 
-    PeerId &operator=(const PeerId &other)
+    constexpr PeerId &operator=(const PeerId &other)
     {
         mType = other.mType;
         mUid  = other.mUid;
         return *this;
     }
 
-    PeerId &operator=(PeerId &&other)
+    constexpr PeerId &operator=(PeerId &&other)
     {
         mType = std::move(other.mType);
         mUid = std::move(other.mUid);
@@ -45,9 +40,10 @@ struct PeerId
     constexpr Type type() const { return mType; }
     constexpr std::int64_t uid() const { return mUid; }
 
-    constexpr PeerId none() { return PeerId{PeerId::None, 0}; }
-    constexpr PeerId user(std::int64_t uid) { return PeerId{PeerId::User, uid}; }
-    constexpr PeerId group(std::int64_t uid) { return PeerId{PeerId::Group, uid}; }
+    static constexpr PeerId none() { return PeerId{PeerId::None, 0}; }
+    static constexpr PeerId user(std::int64_t uid) { return PeerId{PeerId::User, uid}; }
+    static constexpr PeerId group(std::int64_t uid) { return PeerId{PeerId::Group, uid}; }
+    static constexpr PeerId system(std::int64_t uid) { return PeerId{PeerId::System, uid}; }
 
     constexpr friend bool operator==(const PeerId &lhs, const PeerId &rhs)
     {
@@ -60,6 +56,12 @@ struct PeerId
     }
 
 private:
+    PeerId() = default;
+    constexpr PeerId(Type type, std::int64_t uid)
+        : mType(type)
+        , mUid(uid)
+    {}
+
     Type mType;
     std::int64_t mUid;
 };
@@ -75,7 +77,9 @@ public:
     PeerId id() const { return mId; }
 
 protected:
-    Chat() = default;
+    Chat()
+        : mId{PeerId::none()}
+    {}
 
 private:
     PeerId mId;
@@ -104,6 +108,12 @@ protected:
 private:
     std::vector<Chat::Ptr> mChats;
 };
+
+constexpr bool test(const PeerId &id, const PeerId &other)
+{
+    auto t = id;
+    return t == other;
+}
 
 int main()
 {
