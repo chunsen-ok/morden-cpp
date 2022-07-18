@@ -158,7 +158,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         LRESULT hitTests[3][3] = 
         {
             { HTTOPLEFT,    fOnResizeBorder ? HTTOP : HTCAPTION, HTTOPRIGHT },
-            { HTLEFT,       HTCLIENT,     HTRIGHT },
+            { HTLEFT,       HTNOWHERE,     HTRIGHT },
             { HTBOTTOMLEFT, HTBOTTOM, HTBOTTOMRIGHT },
         };
 
