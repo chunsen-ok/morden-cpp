@@ -9,5 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(src/tcpclient)
 add_subdirectory(src/tcpserver)
+add_subdirectory(src/httpserver)
+add_subdirectory(src/htmlrender)
 add_subdirectory(src/ranges)
 add_subdirectory(src/WebServer)
