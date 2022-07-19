@@ -5,7 +5,7 @@
 
 namespace mcpp {
 
-    template<typename Iter, typename T = typename std::iterator_trait<Iter>::value_type>
+    template<typename Iter, typename T = typename std::iterator_traits<Iter>::value_type>
     std::pair<Iter, Iter> find_value_range(Iter begin, Iter end, const T &value)
     {
         while (begin < end) {

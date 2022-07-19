@@ -1,14 +1,30 @@
 #include <fstream>
+#include <iostream>
+#include <string>
 
-int main() {
-    std::fstream f("data.dat", std::ios_base::binary | std::ios_base::out);
+int main(int argc, char *argv[]) {
+    char ch = 'A';
+    std::size_t count = 0;
+    if (argc >= 2) {
+        ch = argv[1][0];
+    }
+
+    if (argc >= 3) {
+        count = std::stoi(std::string(argv[2]), nullptr);
+    }
+
+    std::cout << ch << " " << count << std::endl;
+    if (count <= 0) { return 1; }
+
+    std::fstream f("data.txt", std::ios_base::binary | std::ios_base::out);
     if (f.is_open()) {
-        constexpr std::size_t total{1024*1024*30};
+        f.seekp(1);
         std::size_t writted{0};
-        while (writted < total) {
-            f << 1234;
+        while (writted <= count) {
+            f << ch;
             writted += sizeof(int);
         }
     }
+
     return 0;
 }
