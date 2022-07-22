@@ -23,6 +23,24 @@ auto createPost() -> PostParam
     return std::make_pair(std::string{"/user/groups"}, makeCreatePost());
 }
 
+class AbstractMainWindow
+{
+public:
+
+};
+
+class PlatformMainWindow: public AbstractMainWindow
+{
+public:
+
+};
+
+class MainWindow: public PlatformMainWindow
+{
+public:
+
+};
+
 int main()
 {
     SessionApi api;

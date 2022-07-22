@@ -1,8 +1,3 @@
-// https://docs.microsoft.com/en-us/windows/win32/learnwin32/managing-application-state-
-//
-// 窗口类
-// 窗口
-// 窗口过程瓶颈，以及如何避免 - https://docs.microsoft.com/en-us/windows/win32/learnwin32/writing-the-window-procedure
 #include <Windows.h>
 #include <windowsx.h>
 #include <ShObjIdl.h>
@@ -14,6 +9,59 @@ constexpr int padding_left = 8;
 constexpr int padding_top = 30;
 constexpr int padding_right = 8;
 constexpr int padding_bottom = 20;
+
+static void CALLBACK OpenDialog();
+static void CALLBACK SetWindowState();
+static WindowState* CALLBACK GetState(HWND hwnd);
+static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+{
+    // 窗口类：定义多个窗口可能共有的一组行为。
+    LPCWSTR CLASS_NAME  = L"Sample Window Class";
+    WNDCLASSEX wc = { };
+    wc.cbSize = sizeof(WNDCLASSEX);
+    wc.lpfnWndProc   = WindowProc; // 窗口过程
+    wc.hInstance     = hInstance; // 应用实例
+    wc.lpszClassName = CLASS_NAME; // 窗口类标识字符串
+    wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    // 向操作系统注册窗口类
+    RegisterClassEx(&wc);
+    
+    WindowState state;
+
+    // 创建窗口实例
+    // 每个特定窗口的唯一数据被称为**实例数据**
+    HWND hwnd = CreateWindowEx(
+        0,                              // Optional window styles.
+        CLASS_NAME,                     // Window class
+        L"Learn to Program Windows",    // Window text
+        WS_OVERLAPPEDWINDOW,            // Window style
+
+        // Size and position
+        CW_USEDEFAULT, CW_USEDEFAULT, 800, 600,
+
+        NULL,       // Parent window    
+        NULL,       // Menu
+        hInstance,  // Instance handle
+        &state       // Additional application data
+    );
+
+    if (hwnd == NULL) { 
+        return 0;
+    }
+
+    ShowWindow(hwnd, nCmdShow);
+
+    MSG msg = { };
+    // 从消息队列拉取一条消息    
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    return 0;
+}
 
 void CALLBACK OpenDialog()
 {
@@ -65,9 +113,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         RECT rcClient;
         GetWindowRect(hwnd, &rcClient);
         SetWindowPos(
-            hwnd, 
-            NULL, 
-            rcClient.left, 
+            hwnd,
+            NULL,
+            rcClient.left,
             rcClient.top,
             rcClient.right - rcClient.left,
             rcClient.bottom - rcClient.top,
@@ -155,7 +203,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
 
         // Hit test (HTTOPLEFT, ... HTBOTTOMRIGHT)
-        LRESULT hitTests[3][3] = 
+        LRESULT hitTests[3][3] =
         {
             { HTTOPLEFT,    fOnResizeBorder ? HTTOP : HTCAPTION, HTTOPRIGHT },
             { HTLEFT,       HTNOWHERE,     HTRIGHT },
@@ -169,52 +217,4 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
 
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
-}
-
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
-{
-    // 窗口类：定义多个窗口可能共有的一组行为。
-    LPCWSTR CLASS_NAME  = L"Sample Window Class";
-    WNDCLASSEX wc = { };
-    wc.cbSize = sizeof(WNDCLASSEX);
-    wc.lpfnWndProc   = WindowProc; // 窗口过程
-    wc.hInstance     = hInstance; // 应用实例
-    wc.lpszClassName = CLASS_NAME; // 窗口类标识字符串
-    wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    // 向操作系统注册窗口类
-    RegisterClassEx(&wc);
-    
-    WindowState state;
-
-    // 创建窗口实例
-    // 每个特定窗口的唯一数据被称为**实例数据**
-    HWND hwnd = CreateWindowEx(
-        0,                              // Optional window styles.
-        CLASS_NAME,                     // Window class
-        L"Learn to Program Windows",    // Window text
-        WS_OVERLAPPEDWINDOW,            // Window style
-
-        // Size and position
-        CW_USEDEFAULT, CW_USEDEFAULT, 800, 600,
-
-        NULL,       // Parent window    
-        NULL,       // Menu
-        hInstance,  // Instance handle
-        &state       // Additional application data
-    );
-
-    if (hwnd == NULL) { 
-        return 0;
-    }
-
-    ShowWindow(hwnd, nCmdShow);
-
-    MSG msg = { };
-    // 从消息队列拉取一条消息    
-    while (GetMessage(&msg, NULL, 0, 0)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
-
-    return 0;
 }
