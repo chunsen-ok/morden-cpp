@@ -30,7 +30,7 @@
 *.exe
 *.out
 *.app
-
+*.txt.user
 CMakeSettings.json
 
 robot.sh

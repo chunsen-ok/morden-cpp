@@ -15,6 +15,8 @@ constexpr int padding_top = 30;
 constexpr int padding_right = 8;
 constexpr int padding_bottom = 20;
 
+static void CALLBACK desktopWindow();
+
 void CALLBACK OpenDialog()
 {
     HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -102,7 +104,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         margins.cyTopHeight = 1;
         HRESULT hr = DwmExtendFrameIntoClientArea(hwnd, &margins);
     }
-        return 0;
+        break;
     case WM_NCCALCSIZE:
     {
         if (wParam == TRUE) {
@@ -197,24 +199,52 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         // Size and position
         CW_USEDEFAULT, CW_USEDEFAULT, 800, 600,
 
-        NULL,       // Parent window    
+        NULL,       // Parent window
         NULL,       // Menu
         hInstance,  // Instance handle
         &state       // Additional application data
     );
 
-    if (hwnd == NULL) { 
+    if (hwnd == NULL) {
         return 0;
     }
 
     ShowWindow(hwnd, nCmdShow);
 
+    // 创建窗口实例
+    // 每个特定窗口的唯一数据被称为**实例数据**
+    HWND owned = CreateWindowEx(
+        0,                              // Optional window styles.
+        CLASS_NAME,                     // Window class
+        L"Owned Windows",    // Window text
+        WS_OVERLAPPEDWINDOW,            // Window style
+
+        // Size and position
+        CW_USEDEFAULT, CW_USEDEFAULT, 800, 600,
+
+        hwnd,       // Parent window
+        NULL,       // Menu
+        hInstance,  // Instance handle
+        NULL       // Additional application data
+    );
+
+    if (owned == NULL) {
+        return 0;
+    }
+
+    ShowWindow(owned, nCmdShow);
+
     MSG msg = { };
-    // 从消息队列拉取一条消息    
+    // 从消息队列拉取一条消息
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
 
     return 0;
+}
+
+void desktopWindow()
+{
+
 }

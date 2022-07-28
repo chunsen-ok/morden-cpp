@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <boost/asio.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/beast.hpp>
 
 namespace Asio {
