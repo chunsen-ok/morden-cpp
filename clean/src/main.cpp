@@ -1,90 +1,69 @@
-#include <string>
-#include <vector>
 #include <iostream>
+#include <string>
 #include <memory>
+#include <vector>
 
-class HistoryItem
+class Rule: public std::enable_shared_from_this<Rule> 
 {
 public:
-    enum Type
+    [[nodiscard]] static std::shared_ptr<Rule> create()
     {
-        Binary,
-        Text,
-        Picture,
-    };
+        return std::shared_ptr<Rule>(new Rule{});
+    }
 
+protected:
+    Rule(): std::enable_shared_from_this<Rule>{} {}
+};
+
+class Target: public std::enable_shared_from_this<Target>
+{
 public:
-    virtual ~HistoryItem() = default;
+    [[nodiscard]] static std::shared_ptr<Target> create()
+    {
+        return std::shared_ptr<Target>(new Target{});
+    }
 
-    virtual Type type() const { return Binary; }
-    int sessionId() const;
+    void add_source(const std::shared_ptr<Target> &source)
+    {
+        if (!source) {
+            std::cerr << "Invalid source\n";
+            return;
+        }
+
+        auto it = std::find(mDepends.cbegin(), mDepends.cend(), source);
+        if (it == mDepends.cend()) {
+            mDepends.push_back(source);
+        }
+    }
+
+    void set_rule(const std::shared_ptr<Rule> &rule)
+    {
+        if (!rule) {
+            std::cerr << "Invalid rule\n";
+            return;
+        }
+
+        mRule = rule;
+    }
+
+    void build()
+    {
+        // ...
+    }
+
+protected:
+    Target() = default;
 
 private:
-    int mSessionId;
+    std::vector<std::shared_ptr<Target>> mDepends;
+    std::shared_ptr<Rule> mRule;
 };
-
-class HistoryViewItem
-{
-public:
-    virtual ~HistoryViewItem() = default;
-
-    virtual void layout() {}
-    virtual void paint() {}
-};
-
-class HistoryComposeItem
-{
-public:
-    virtual ~HistoryComposeItem() = default;
-
-    virtual HistoryItem *data() = 0;
-    virtual const HistoryItem *data() const = 0;
-
-    virtual HistoryViewItem *view() = 0;
-    virtual const HistoryViewItem *view() const = 0;
-};
-
-class HistoryTextItem: public HistoryItem
-{
-public:
-    virtual Type type() const override { return Text; }
-
-private:
-    std::string mText;
-};
-
-class HistoryTextViewItem: public HistoryViewItem
-{
-public:
-    void layout() override {}
-    void paint() override {}
-};
-
-template<typename Data, typename View>
-class ComposeItem: public HistoryComposeItem
-{
-public:
-    HistoryItem *data() override { return std::addressof(mData); }
-    const HistoryItem *data() const override { return std::addressof(mData); }
-
-    HistoryViewItem *view() override { return std::addressof(mView); }
-    const HistoryViewItem *view() const override { return std::addressof(mView); }
-
-private:
-    Data mData;
-    View mView;
-};
-
-class Data
-{};
-
-class View
-{};
-
-class Config
-{};
 
 int main()
 {
-    return 0;
+    auto a = Target::create();
+    auto b = Target::create();
+    a->add_source(b);
+
+    a->build();
 }

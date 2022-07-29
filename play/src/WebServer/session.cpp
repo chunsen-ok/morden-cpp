@@ -1,5 +1,10 @@
 #include "session.hpp"
 
+static Http::response<Http::string_body> not_found(const Http::request<Http::string_body>& req, Beast::string_view target);
+static Http::response<Http::string_body> bad_request(const Http::request<Http::string_body>& req, Beast::string_view why);
+static Http::response<Http::string_body> server_error(const Http::request<Http::string_body>& req, Beast::string_view what);
+static Http::response<Http::string_body> timestamp(const Http::request<Http::string_body>& req);
+
 Beast::string_view mime_type(Beast::string_view path)
 {
 	using Beast::iequals;
@@ -60,41 +65,11 @@ std::string path_cat(Beast::string_view base, Beast::string_view path)
 
 void Session::handle_request()
 {
-	// Returns a bad request response
-	auto const bad_request = [](const Http::request<Http::string_body>& req, Beast::string_view why)
-	{
-		Http::response<Http::string_body> res{ Http::status::bad_request, req.version() };
-		res.set(Http::field::server, BOOST_BEAST_VERSION_STRING);
-		res.set(Http::field::content_type, "text/html");
-		res.keep_alive(req.keep_alive());
-		res.body() = std::string(why);
-		res.prepare_payload();
-		return res;
-	};
-
-	// Returns a not found response
-	auto const not_found = [](const Http::request<Http::string_body>& req, Beast::string_view target)
-	{
-		Http::response<Http::string_body> res{ Http::status::not_found, req.version() };
-		res.set(Http::field::server, BOOST_BEAST_VERSION_STRING);
-		res.set(Http::field::content_type, "text/html");
-		res.keep_alive(req.keep_alive());
-		res.body() = "The resource '" + std::string(target) + "' was not found.";
-		res.prepare_payload();
-		return res;
-	};
-
-	// Returns a server error response
-	auto const server_error = [](const Http::request<Http::string_body>& req, Beast::string_view what)
-	{
-		Http::response<Http::string_body> res{ Http::status::internal_server_error, req.version() };
-		res.set(Http::field::server, BOOST_BEAST_VERSION_STRING);
-		res.set(Http::field::content_type, "text/html");
-		res.keep_alive(req.keep_alive());
-		res.body() = "An error occurred: '" + std::string(what) + "'";
-		res.prepare_payload();
-		return res;
-	};
+	if (mReq.method() == Http::verb::get) {
+		if (mReq.target() == "/api/v1/utils/timestamp") {
+			return write(timestamp(mReq));
+		}
+	}
 
 	// Make sure we can handle the method
 	if (mReq.method() != Http::verb::get && mReq.method() != Http::verb::head) {
@@ -152,3 +127,51 @@ void Session::handle_request()
 	res.keep_alive(mReq.keep_alive());
 	return write(std::move(res));
 }
+
+Http::response<Http::string_body> not_found(const Http::request<Http::string_body>& req, Beast::string_view target)
+{
+	Http::response<Http::string_body> res{ Http::status::not_found, req.version() };
+	res.set(Http::field::server, BOOST_BEAST_VERSION_STRING);
+	res.set(Http::field::content_type, "text/html");
+	res.keep_alive(req.keep_alive());
+	res.body() = "The resource '" + std::string(target) + "' was not found.";
+	res.prepare_payload();
+	return res;
+}
+
+Http::response<Http::string_body> bad_request(const Http::request<Http::string_body>& req, Beast::string_view why)
+{
+	Http::response<Http::string_body> res{ Http::status::bad_request, req.version() };
+	res.set(Http::field::server, BOOST_BEAST_VERSION_STRING);
+	res.set(Http::field::content_type, "text/html");
+	res.keep_alive(req.keep_alive());
+	res.body() = std::string(why);
+	res.prepare_payload();
+	return res;
+};
+
+Http::response<Http::string_body> server_error(const Http::request<Http::string_body>& req, Beast::string_view what)
+{
+	Http::response<Http::string_body> res{ Http::status::internal_server_error, req.version() };
+	res.set(Http::field::server, BOOST_BEAST_VERSION_STRING);
+	res.set(Http::field::content_type, "text/html");
+	res.keep_alive(req.keep_alive());
+	res.body() = "An error occurred: '" + std::string(what) + "'";
+	res.prepare_payload();
+	return res;
+};
+
+Http::response<Http::string_body> timestamp(const Http::request<Http::string_body>& req)
+{
+	using namespace std::chrono;
+	const auto now = system_clock::now();
+	const auto ms = duration_cast<seconds>(now.time_since_epoch()).count();
+
+	Http::response<Http::string_body> res{ Http::status::ok, req.version() };
+	res.set(Http::field::server, BOOST_BEAST_VERSION_STRING);
+	res.set(Http::field::content_type, "text/plain");
+	res.keep_alive(req.keep_alive());
+	res.body() = std::to_string(ms);
+	res.prepare_payload();
+	return res;
+};

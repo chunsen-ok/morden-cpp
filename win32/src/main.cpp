@@ -10,6 +10,7 @@ constexpr int padding_top = 30;
 constexpr int padding_right = 8;
 constexpr int padding_bottom = 20;
 
+static void CALLBACK desktopWindow();
 static void CALLBACK OpenDialog();
 static void CALLBACK SetWindowState();
 static WindowState* CALLBACK GetState(HWND hwnd);
@@ -63,7 +64,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     return 0;
 }
 
-void CALLBACK OpenDialog()
+void OpenDialog()
 {
     HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (SUCCEEDED(hr)) {
@@ -90,20 +91,20 @@ void CALLBACK OpenDialog()
     CoUninitialize();
 }
 
-void CALLBACK SetWindowState(HWND hwnd, LPARAM lParam)
+void SetWindowState(HWND hwnd, LPARAM lParam)
 {
     CREATESTRUCT *createData = reinterpret_cast<CREATESTRUCT*>(lParam);
     auto state = reinterpret_cast<WindowState*>(createData->lpCreateParams);
     SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)state);
 }
 
-WindowState* CALLBACK GetState(HWND hwnd)
+WindowState* GetState(HWND hwnd)
 {
     LONG_PTR ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);
     return reinterpret_cast<WindowState*>(ptr);
 }
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
     case WM_CREATE:
@@ -150,7 +151,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         margins.cyTopHeight = 1;
         HRESULT hr = DwmExtendFrameIntoClientArea(hwnd, &margins);
     }
-        return 0;
+        break;
     case WM_NCCALCSIZE:
     {
         if (wParam == TRUE) {
