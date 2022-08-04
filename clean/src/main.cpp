@@ -3,67 +3,51 @@
 #include <memory>
 #include <vector>
 
-class Rule: public std::enable_shared_from_this<Rule> 
+class Canvas: public std::enable_shared_from_this<Canvas>
 {
 public:
-    [[nodiscard]] static std::shared_ptr<Rule> create()
+    using Ptr = std::shared_ptr<Canvas>;
+    using WeakPtr = std::weak_ptr<Canvas>;
+
+public:
+    Canvas() {}
+    virtual ~Canvas() = default;
+
+    void append_element(const std::shared_ptr<Element> &el)
     {
-        return std::shared_ptr<Rule>(new Rule{});
+        if (el) {
+            m_children.push_back(el);
+        }
     }
 
 protected:
-    Rule(): std::enable_shared_from_this<Rule>{} {}
+     std::vector<std::shared_ptr<Element>> m_children;
 };
 
-class Target: public std::enable_shared_from_this<Target>
+class Element: public std::enable_shared_from_this<Element>
 {
 public:
-    [[nodiscard]] static std::shared_ptr<Target> create()
+    using Ptr = std::shared_ptr<Element>;
+    using WeakPtr = std::shared_ptr<Element>;
+
+    explicit Element(const Canvas::Ptr& canvas)
+        : m_canvas{canvas}
+    {}
+
+    virtual ~Element()
     {
-        return std::shared_ptr<Target>(new Target{});
+        std::cout << "~Element\n";
     }
-
-    void add_source(const std::shared_ptr<Target> &source)
-    {
-        if (!source) {
-            std::cerr << "Invalid source\n";
-            return;
-        }
-
-        auto it = std::find(mDepends.cbegin(), mDepends.cend(), source);
-        if (it == mDepends.cend()) {
-            mDepends.push_back(source);
-        }
-    }
-
-    void set_rule(const std::shared_ptr<Rule> &rule)
-    {
-        if (!rule) {
-            std::cerr << "Invalid rule\n";
-            return;
-        }
-
-        mRule = rule;
-    }
-
-    void build()
-    {
-        // ...
-    }
-
-protected:
-    Target() = default;
 
 private:
-    std::vector<std::shared_ptr<Target>> mDepends;
-    std::shared_ptr<Rule> mRule;
+    Element::WeakPtr m_parent;
+    Canvas::WeakPtr  m_canvas;
 };
 
 int main()
 {
-    auto a = Target::create();
-    auto b = Target::create();
-    a->add_source(b);
+    auto canvas = std::make_shared<Canvas>();
 
-    a->build();
+    auto el0 = std::make_shared<Element>(canvas);
+    canvas->append_element(el0);
 }
