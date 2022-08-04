@@ -1,30 +1,32 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <utility>
 
-int main(int argc, char *argv[]) {
-    char ch = 'A';
-    std::size_t count = 0;
-    if (argc >= 2) {
-        ch = argv[1][0];
-    }
+class MessageData
+{
+public:
+    int id() const;
+    int type() const;
+    int states() const;
+};
 
-    if (argc >= 3) {
-        count = std::stoi(std::string(argv[2]), nullptr);
-    }
+class MessageItem
+{
+public:
+    void layout();
+    void paint();
+    void update();
+};
 
-    std::cout << ch << " " << count << std::endl;
-    if (count <= 0) { return 1; }
+template<typename T>
+class TipMessageItem: public MessageItem
+{
+public:
+    std::string text() const;
+};
 
-    std::fstream f("data.txt", std::ios_base::binary | std::ios_base::out);
-    if (f.is_open()) {
-        f.seekp(1);
-        std::size_t writted{0};
-        while (writted <= count) {
-            f << ch;
-            writted += sizeof(int);
-        }
-    }
-
+int main()
+{
     return 0;
 }
