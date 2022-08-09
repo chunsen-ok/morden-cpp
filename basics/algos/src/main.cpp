@@ -1,8 +1,6 @@
-#include "range_merge.hpp"
+#include <iostream>
 
-int main() {
-    std::vector<Range<int>> ranges;
-    range_merge(ranges.begin(), ranges.end());
-
+int main()
+{
     return 0;
 }
