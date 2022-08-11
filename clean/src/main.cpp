@@ -90,36 +90,9 @@ public:
     virtual void paint() {}
 };
 
-template<typename T>
-class Element: public AbstractElement, public T
+class AbstractTipElement: public AbstractElement
 {
 public:
-    template<typename ... Args>
-    Element(Args ... args)
-        : AbstractElement()
-        , T(std::forward<Args>(args)...)
-    {}
-
-    ElementType type() const override
-    {
-        return T::type(); 
-    }
-    
-    int id() const override
-    {
-        return T::id();
-    }
-};
-
-template<typename T>
-class TipElement: public Element<T>
-{
-public:
-    template<typename ... Args>
-    TipElement(Args ... args)
-        : Element{std::forward<Args>(args)...}
-    {}
-
     void paint() override final
     {
         std::cout << "Tip: " << text() << std::endl;
@@ -129,15 +102,9 @@ protected:
     virtual const std::string &text() const = 0;
 };
 
-template<typename T>
-class ChatElement: public Element<T>
+class AbstractChatElement: public AbstractElement
 {
 public:
-    template<typename ... Args>
-    ChatElement(Args ... args)
-        : Element(std::forward<Args>(args)...)
-    {}
-
     void paint() override final
     {
         std::cout << "Paint chat\n";
@@ -146,6 +113,34 @@ public:
 
 protected:
     virtual void paintContent() = 0;
+};
+
+template<typename T>
+class TipElement: public AbstractTipElement, public T
+{
+public:
+    template<typename ... Args>
+    TipElement(Args ... args)
+        : AbstractTipElement()
+        , T(std::forward<Args>(args)...)
+    {}
+
+    ElementType type() const override { return T::type(); }
+    int id() const override { return T::id(); }
+};
+
+template<typename T>
+class ChatElement: public AbstractChatElement, public T
+{
+public:
+    template<typename ... Args>
+    ChatElement(Args ... args)
+        : AbstractChatElement()
+        , T(std::forward<Args>(args)...)
+    {}
+
+    ElementType type() const override { return T::type(); }
+    int id() const override { return T::id(); }
 };
 
 class OneElement: public ChatElement<OneData>
