@@ -3,30 +3,17 @@
 #include <string>
 #include <utility>
 
-class MessageData
-{
-public:
-    int id() const;
-    int type() const;
-    int states() const;
-};
-
-class MessageItem
-{
-public:
-    void layout();
-    void paint();
-    void update();
-};
-
-template<typename T>
-class TipMessageItem: public MessageItem
-{
-public:
-    std::string text() const;
-};
-
 int main()
 {
+    std::fstream f("data.dat", std::ios_base::binary | std::ios_base::out);
+
+    std::size_t bytesWritten{0};
+    while (bytesWritten < 1024 * 1024 * 100) {
+        f << 3525;
+        f << 90878;
+
+        bytesWritten += 8;
+    }
+
     return 0;
 }
