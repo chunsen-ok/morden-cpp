@@ -6,6 +6,7 @@
 // filter: C<T>, (T -> bool) -> C<T>;
 // transform: C<T>, (In -> Out) -> C<Out>;
 // reduce/folding: C<T>, R, (R, T -> R) -> R;
+// partition: 
 
 enum Gender
 {
@@ -16,36 +17,47 @@ enum Gender
 class Human
 {
 public:
-    Human(const std::string& name, Gender gender)
+    Human()
+        : Human("", Male, 0)
+    {}
+
+    Human(const std::string& name, Gender gender, int age)
         : mName(name)
         , mGender(gender)
+        , mAge(age)
     {}
 
     const std::string& name() const { return mName; }
     Gender gender() const { return mGender; }
+    int age() const { return mAge; }
 
 private:
     std::string mName;
     Gender mGender;
+    int mAge;
 };
 
-// find_females: std::vector<Human> -> std::vector<std::string>;
-// is_female: Human -> bool;
+// Predicates
 
 bool is_female(const Human& human)
 {
     return human.gender() == Gender::Female;
 }
 
-std::vector<std::string> find_females(const std::vector<Human>& humans)
+bool order_than(const Human& human, int age)
+{
+    return human.age() > age;    
+}
+
+template<typename Iter, typename Pred>
+std::vector<std::string> names_for(Iter begin, Iter end, Pred pred)
 {
     // return filter(humans, is_female);
-    std::vector<std::string> names;
-    for (const auto& human: humans) {
-        if (is_female(human)) {
-            names.push_back(human.name());
-        }
-    }
+    std::vector<Human> females(humans.size());
+    const auto last = std::copy_if(begin, end, females.begin(), std::forward<Pred>(pred));
+
+    std::vector<std::string> names(std::distance(females.begin(), last));
+    std::transform(females.begin(), last, names.begin(), [](const Human& human){ return human.name(); });
 
     return names;
 }
@@ -72,57 +84,33 @@ std::string trim(std::string s)
     return trim_right(trim_left(s));
 }
 
-class MultiArgs
-{
-public:
-
-    template<typename ... Args>
-    static std::shared_ptr<MultiArgs> create(Args ... args)
-    {
-        return std::shared_ptr<MultiArgs>(new MultiArgs(std::forward<Args>(args)...));
-    }
-
-private:
-    MultiArgs(int a, double b, const std::string& c)
-        : mA(a)
-        , mB(b)
-        , mC(c)
-    {
-
-    }
-
-private:
-    int mA;
-    double mB;
-    std::string mC;
-};
-
 int main()
 {
+    std::string s{"  Hello world  !  "};
+    std::cout << trim(s) << std::endl;
+
+    using namespace std::placeholders;
+
     const std::vector<Human> humans{
-        Human{"Nihao",Male},
-        Human{"Abc",Female},
-        Human{"VHG",Male},
-        Human{"HAH",Male},
-        Human{"W2V",Female},
-        Human{"HAV",Female},
-        Human{"ANH",Male},
-        Human{"AHE",Female},
-        Human{"DH",Male},
-        Human{"DCV",Male},
-        Human{"DHW",Male},
-        Human{"TH",Female},
-        Human{"SJH",Male},
-        Human{"HTR",Female},
+        Human{"Nihao",Male, 12},
+        Human{"Abc",Female, 46},
+        Human{"VHG",Male, 14},
+        Human{"HAH",Male, 68},
+        Human{"W2V",Female, 52},
+        Human{"HAV",Female, 23},
+        Human{"ANH",Male, 27},
+        Human{"AHE",Female, 37},
+        Human{"DH",Male, 47},
+        Human{"DCV",Male, 12},
+        Human{"DHW",Male, 76},
+        Human{"TH",Female, 3},
+        Human{"SJH",Male, 7},
+        Human{"HTR",Female, 45},
     };
 
-    for(const auto& name: find_females(humans)) {
+    for(const auto& name: names_for(humans.cbegin(), humans.cend(), std::bind(order_than, _1, 30))) {
         std::cout << name << std::endl;
     }
-
-    std::string s{"  Hello world  !  "};
-
-    std::cout << trim(s) << std::endl;
 
     return 0;
 }

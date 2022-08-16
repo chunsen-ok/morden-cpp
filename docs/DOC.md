@@ -2,6 +2,8 @@
 
 ## 函数式编程
 
+基于lambda演算
+
 函数式的好处：正确性和表达能力强使得可以写更少的代码。
 
 纯函数 pure function
@@ -10,12 +12,11 @@
 
 ranges
 monads
+尾递归
 
 
 
 
-
-基于lambda演算
 类型推导、多态类型
 惰性计算
 type classes, monads
