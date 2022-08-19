@@ -6,4 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(CleanApp
     src/main.cpp
+    src/chat.hpp
 )
+
