@@ -1,19 +1,52 @@
 #include <iostream>
+#include <vector>
+#include <memory>
+
+template<typename Ctx>
+class CanvasItem
+{
+public:
+    void paint() {
+        paintForward<Ctx::IsForward>();
+    }
+    void layout()
+    {
+        layoutForward<Ctx::IsForward>();
+    }
+
+private:
+    template<bool forward>
+    void layoutForward();
+
+    template<>
+    void layoutForward<true>() { std::cout << "Forward\n"; }
+    
+    template<>
+    void layoutForward<false>() { std::cout << "Normal\n"; }
+
+    template<bool forward>
+    void paintForward();
+
+    template<>
+    void paintForward<true>() { std::cout << "Forward\n"; }
+
+    template<>
+    void paintForward<false>() { std::cout << "Normal\n"; }
+};
+
+template<bool IsForward>
+struct CanvasItemTraits
+{
+    static constexpr bool IsForward = IsForward;
+};
 
 int main()
 {
-    double foo = -0.0;
-    double bar = 0.0;
- 
-    auto res = foo <=> bar;
- 
-    if (res < 0)
-        std::cout << "-0 is less than 0";
-    else if (res > 0)
-        std::cout << "-0 is greater than 0";
-    else if (res == 0)
-        std::cout << "-0 and 0 are equal";
-    else
-        std::cout << "-0 and 0 are unordered";
+    CanvasItem<CanvasItemTraits<true>> a;
+    CanvasItem<CanvasItemTraits<false>> b;
+
+    a.layout();
+    b.layout();
+
     return 0;
 }
