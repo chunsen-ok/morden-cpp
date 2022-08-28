@@ -1,0 +1,6 @@
+- trace
+- debug
+- info
+- warn
+- error
+- critical/fatal
