@@ -7,13 +7,10 @@ int main()
 {
     std::fstream f("data.dat", std::ios_base::binary | std::ios_base::out);
 
-    std::size_t bytesWritten{0};
-    while (bytesWritten < 1024 * 1024 * 100) {
-        f << 3525;
-        f << 90878;
-
-        bytesWritten += 8;
-    }
+    f << (unsigned int)0xA0B0C0D0;
+    f << (unsigned short)1; // version
+    f << (unsigned short)1; // type
+    f << u"你好";
 
     return 0;
 }
