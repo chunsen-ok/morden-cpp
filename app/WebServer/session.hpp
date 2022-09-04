@@ -2,6 +2,7 @@
 #define SESSION_HPP
 
 #include "webserver_global.hpp"
+#include <sqlite3/sqlite3.h>
 
 Beast::string_view mime_type(Beast::string_view path);
 std::string path_cat(Beast::string_view base, Beast::string_view path);
@@ -9,9 +10,10 @@ std::string path_cat(Beast::string_view base, Beast::string_view path);
 class Session : public std::enable_shared_from_this<Session>
 {
 public:
-	Session(Tcp::socket&& socket, const std::shared_ptr<const std::string> &root)
+	Session(Tcp::socket&& socket, const std::shared_ptr<const std::string> &root, sqlite3* db)
 		: mStream(std::move(socket))
 		, mDocRoot(root)
+		, mDb(db)
 	{}
 
 	void run()
@@ -83,6 +85,8 @@ private:
 	Http::request<Http::string_body> mReq;
 	Beast::flat_buffer mBuffer;
 	std::shared_ptr<void> mRes;
+
+	sqlite3* mDb;
 };
 
 #endif 

@@ -57,7 +57,7 @@ private:
 			return;
 		}
 		else {
-			auto s = std::make_shared<Session>(std::move(socket), mDocRoot);
+			auto s = std::make_shared<Session>(std::move(socket), mDocRoot, nullptr);
 			s->run();
 		}
 

@@ -1,4 +1,5 @@
 #include "session.hpp"
+#include <thread>
 
 static Http::response<Http::string_body> not_found(const Http::request<Http::string_body>& req, Beast::string_view target);
 static Http::response<Http::string_body> bad_request(const Http::request<Http::string_body>& req, Beast::string_view why);
