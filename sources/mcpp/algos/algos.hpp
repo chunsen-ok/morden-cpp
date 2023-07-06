@@ -1,5 +1,5 @@
-#ifndef ALGOS_HPP
-#define ALGOS_HPP
+#ifndef MCPP_ALGOS_HPP
+#define MCPP_ALGOS_HPP
 
 #include <cstdint>
 

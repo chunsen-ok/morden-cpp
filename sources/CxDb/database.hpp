@@ -2,7 +2,7 @@
 #define MCPP_DATABASE_HPP
 
 #include <string>
-#include <sqlite3/sqlite3.h>
+#include <sqlite3.h>
 
 class Database
 {
