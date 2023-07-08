@@ -26,3 +26,8 @@ add_library(External::Sqlite3 ALIAS ExternalSqlite3)
 
 target_include_directories(ExternalSqlite3 PUBLIC ${SOURCE_DIR})
 target_compile_features(ExternalSqlite3 PRIVATE cxx_std_17)
+target_compile_definitions(ExternalSqlite3
+    PRIVATE
+        SQLITE_ENABLE_FTS5
+        SQLITE_ENABLE_JSON1
+)

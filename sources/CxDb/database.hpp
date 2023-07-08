@@ -2,31 +2,31 @@
 #define MCPP_DATABASE_HPP
 
 #include <string>
-#include <sqlite3.h>
+#include <memory>
 
+namespace mcpp {
+
+class SqlQuery;
+class DatabasePrivate;
 class Database
 {
-    friend class SqlQuery;
+    friend SqlQuery;
 public:
-    ~Database()
-    {
-        if (mDb) { sqlite3_close(mDb); }
-    }
+    Database();
+    Database(const std::string& path);
+    ~Database();
 
-    bool open(const std::string& path)
-    {
-        const int rc = sqlite3_open(path.c_str(), &mDb);
-        if (rc != SQLITE_OK) {
-            return false;
-        }
-        return true;
-    }
+    bool is_open() const;
+    void open(const std::string& path);
+    void close();
 
+    bool has_error() const;
+    const char* error_msg() const;
+    
 private:
-    sqlite3* db() const { return mDb; }
-
-private:
-    sqlite3 *mDb{nullptr};
+    std::unique_ptr<DatabasePrivate> d;
 };
+
+}
 
 #endif
