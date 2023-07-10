@@ -11,6 +11,8 @@ static const char* stories_table = R"(CREATE TABLE IF NOT EXISTS stories (
 
 static int callback(void*, int argc, char* argv[], char* colName[])
 {
+    AppState state;
+
     return 0;
 }
 
