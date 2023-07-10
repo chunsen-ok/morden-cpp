@@ -3,6 +3,8 @@ add_library(CxDb STATIC
     database.cpp
     sqlquery.hpp
     sqlquery.cpp
+    fts5_chinese_tokenizer.hpp
+    fts5_chinese_tokenizer.cpp
 )
 add_library(Cx::Db ALIAS CxDb)
 

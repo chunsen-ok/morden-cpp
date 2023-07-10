@@ -20,10 +20,10 @@ ExternalProject_Get_Property(
 add_library(ExternalLimonp INTERFACE)
 add_library(External::Limonp ALIAS ExternalLimonp)
 target_include_directories(ExternalLimonp INTERFACE ${SOURCE_DIR}/deps/limonp/include)
-target_compile_features(ExternalLimonp INTERFACE cxx_std_17)
+target_compile_features(ExternalLimonp INTERFACE cxx_std_17 c_std_17)
 
 add_library(ExternalCppjieba INTERFACE)
 add_library(External::Cppjieba ALIAS ExternalCppjieba)
 target_include_directories(ExternalCppjieba INTERFACE ${SOURCE_DIR}/include)
 target_link_libraries(ExternalCppjieba INTERFACE ExternalLimonp)
-target_compile_features(ExternalCppjieba INTERFACE cxx_std_17)
+target_compile_features(ExternalCppjieba INTERFACE cxx_std_17 c_std_17)
