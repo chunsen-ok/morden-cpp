@@ -1,2 +1,5 @@
 add_subdirectory(db)
-add_subdirectory(tokenize)
+
+if(${MCPP_ENABLE_TOKENIZER})
+    add_subdirectory(tokenize)
+endif()

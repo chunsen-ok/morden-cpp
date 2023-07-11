@@ -1,2 +1,5 @@
 add_subdirectory(sqlite3)
-add_subdirectory(cppjieba)
+
+if(${MCPP_ENABLE_TOKENIZER})
+    add_subdirectory(cppjieba)
+endif()

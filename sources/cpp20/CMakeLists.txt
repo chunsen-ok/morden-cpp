@@ -6,5 +6,4 @@ target_compile_features(cpp20 PRIVATE cxx_std_20)
 
 target_link_libraries(cpp20 PRIVATE 
     mcpp
-    External::Sqlite3
 )
