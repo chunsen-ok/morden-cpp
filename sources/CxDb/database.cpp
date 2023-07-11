@@ -1,17 +1,16 @@
 #include "database.hpp"
 #include "database_p.hpp"
-#include "fts5_chinese_tokenizer.hpp"
 
 namespace mcpp {
 
 Database::Database()
-    : d{new DatabasePrivate}
+    : d{new DatabasePrivate{this}}
 {
 
 }
 
 Database::Database(const std::string& path)
-    : d{new DatabasePrivate}
+    : d{new DatabasePrivate{this}}
 {
     open(path);
 }
@@ -36,7 +35,7 @@ void Database::open(const std::string& path)
     d->is_open = d->result_code == SQLITE_OK;
 
     if (is_open()) {
-        int rc = enable_fts5_chinese_tokenizer(d->db);
+        int rc = d->enable_fts5_chinese_tokenizer();
         if (rc != SQLITE_OK) {
             std::printf("Initial FTS5 chinese tokenizer error - code: %d, msg: %s\n", rc, error_msg());
         }
